@@ -2,6 +2,7 @@ package utils;
 
 import database.Database;
 import model.Manager;
+import model.Tester;
 import model.User;
 
 import java.sql.SQLException;
@@ -130,6 +131,19 @@ public class DrawMenu {
                         manager.setCreated_at(user.getCreated_at());
                         manager.setUpdated_at(user.getUpdated_at());
                         manager.showUserMenu();
+                        break;
+
+                    case "Tester":
+                        Tester tester = new Tester();
+                        tester.setUserId(user.getUserId());
+                        tester.setUsername(user.getUsername());
+                        tester.setPassword_hash(user.getPassword_hash());
+                        tester.setName(user.getName());
+                        tester.setSurname(user.getSurname());
+                        tester.setRole(user.getRole());
+                        tester.setCreated_at(user.getCreated_at());
+                        tester.setUpdated_at(user.getUpdated_at());
+                        tester.showUserMenu();
                         break;
                 }
 
