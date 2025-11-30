@@ -10,7 +10,7 @@ import java.util.ArrayList;
 
 public class Manager extends User {
 
-    public ArrayList<Integer> getAllUserId() throws SQLException {
+    private ArrayList<Integer> getAllUserId() throws SQLException {
         ArrayList<Integer> idList = new ArrayList<>();
         String query = "SELECT user_id FROM users";
 
@@ -24,7 +24,7 @@ public class Manager extends User {
         return idList;
     }
 
-    public User getUserById(int user_id) throws SQLException {
+    private User getUserById(int user_id) throws SQLException {
         String query = "SELECT * FROM users WHERE user_id = " + user_id;
         Connection dbConnection = Database.openDatabase();
         Statement statement = dbConnection.createStatement();
@@ -141,12 +141,61 @@ public class Manager extends User {
 
     }
 
-    public void addUser() {
-        //TODO
+    public User addUser(User user) throws SQLException {
+            String query = "INSERT INTO users (name, surname, username, password_hash, role) VALUES (?, ?, ?, ?, ?)";
+            Connection dbConnection = Database.openDatabase();
+            PreparedStatement preparedStatement = dbConnection.prepareStatement(query);
+            String passwordHash = PasswordHash.hash(user.getPassword_hash());
+            preparedStatement.setString(1, user.getName());
+            preparedStatement.setString(2, user.getSurname());
+            preparedStatement.setString(3, user.getUsername());
+            preparedStatement.setString(4, passwordHash);
+            preparedStatement.setString(5, user.getRole());
+            preparedStatement.executeUpdate();
+            dbConnection.close();
+        return user;
     }
 
-    public void deleteUser() {
-        //TODO
+    public boolean checkExistingUser(String username) throws SQLException {
+        String query = "SELECT username FROM users WHERE username = ?";
+        Connection connection = Database.openDatabase();
+        PreparedStatement checkStmt = connection.prepareStatement(query);
+        checkStmt.setString(1, username);
+        ResultSet checkResult = checkStmt.executeQuery();
+
+        if(checkResult.next()) {
+            connection.close();
+            return true;
+        }
+        connection.close();
+        return false;
+    }
+
+    public boolean checkExistingUser(int id) throws SQLException {
+        String query = "SELECT user_id FROM users WHERE user_id = ?";
+        Connection connection = Database.openDatabase();
+        PreparedStatement checkStmt = connection.prepareStatement(query);
+        checkStmt.setInt(1, id);
+        ResultSet checkResult = checkStmt.executeQuery();
+
+
+        if(checkResult.next()) {
+            connection.close();
+            return true;
+        }
+        connection.close();
+        return false;
+    }
+
+
+
+    public void deleteUser(int id) throws SQLException {
+        String query = "DELETE FROM users WHERE user_id = ?";
+        Connection connection = Database.openDatabase();
+        PreparedStatement preparedStatement = connection.prepareStatement(query);
+        preparedStatement.setInt(1, id);
+        preparedStatement.executeUpdate();
+        connection.close();
     }
 
     public void showContactStats() {
@@ -339,10 +388,182 @@ public class Manager extends User {
 
                 break;
             case 5:
-                this.addUser();
+                DrawMenu.clearConsole();
+                try {
+                    String titleAdd = "Add User, " + this.getName() + " " + this.getSurname() + ", " + this.getRole();
+                    String[] contentsAdd = {
+                            "",
+                            DrawMenu.BLUE_BOLD + "[1] Username: " + DrawMenu.RESET +  DrawMenu.ITALIC + DrawMenu.LIGHT_GRAY + "Enter username" + DrawMenu.RESET,
+                            DrawMenu.BLUE_BOLD + "[2] Password: " + DrawMenu.RESET +  DrawMenu.ITALIC + DrawMenu.LIGHT_GRAY + "Enter password" + DrawMenu.RESET,
+                            DrawMenu.BLUE_BOLD + "[3] Name: " + DrawMenu.RESET +  DrawMenu.ITALIC + DrawMenu.LIGHT_GRAY + "Enter name" + DrawMenu.RESET,
+                            DrawMenu.BLUE_BOLD + "[4] Surname: " + DrawMenu.RESET +  DrawMenu.ITALIC + DrawMenu.LIGHT_GRAY + "Enter surname" + DrawMenu.RESET,
+                            DrawMenu.BLUE_BOLD + "[5] Role: " + DrawMenu.RESET +  DrawMenu.ITALIC + DrawMenu.LIGHT_GRAY + "Enter role" + DrawMenu.RESET,
+                            ""
+                    };
+                    DrawMenu.printBoxed(titleAdd, contentsAdd);
+                    System.out.println();
+                    DrawMenu.printCenter("Username: ");
+                    while(true) {
+                        String username = Input.getStringInput();
+                        if(this.checkExistingUser(username)) {
+                            DrawMenu.clearConsole();
+                            System.out.println(DrawMenu.RED_BOLD + "Username already exists. Please try again." + DrawMenu.RESET);
+                            DrawMenu.printBoxed(titleAdd, contentsAdd);
+                            System.out.println();
+                            DrawMenu.printCenter("Username: ");
+                        } else {
+                            DrawMenu.clearConsole();
+                            String[] contentsAdd5 = {
+                                    "",
+                                    DrawMenu.BLUE_BOLD + "[1] Username: " + DrawMenu.RESET +  DrawMenu.ITALIC + DrawMenu.LIGHT_GRAY + username + DrawMenu.RESET,
+                                    DrawMenu.BLUE_BOLD + "[2] Password: " + DrawMenu.RESET +  DrawMenu.ITALIC + DrawMenu.LIGHT_GRAY + "Enter password" + DrawMenu.RESET,
+                                    DrawMenu.BLUE_BOLD + "[3] Name: " + DrawMenu.RESET +  DrawMenu.ITALIC + DrawMenu.LIGHT_GRAY + "Enter name" + DrawMenu.RESET,
+                                    DrawMenu.BLUE_BOLD + "[4] Surname: " + DrawMenu.RESET +  DrawMenu.ITALIC + DrawMenu.LIGHT_GRAY + "Enter surname" + DrawMenu.RESET,
+                                    DrawMenu.BLUE_BOLD + "[5] Role: " + DrawMenu.RESET +  DrawMenu.ITALIC + DrawMenu.LIGHT_GRAY + "Enter role" + DrawMenu.RESET,
+                                    ""
+                            };
+                            DrawMenu.printBoxed(titleAdd, contentsAdd5);
+                            System.out.println();
+                            DrawMenu.printCenter("Password: ");
+                            String password = Input.getStringInput();
+
+                            DrawMenu.clearConsole();
+                            String[] contentsAdd2 = {
+                                    "",
+                                    DrawMenu.BLUE_BOLD + "[1] Username: " + DrawMenu.RESET +  DrawMenu.ITALIC + DrawMenu.LIGHT_GRAY + username + DrawMenu.RESET,
+                                    DrawMenu.BLUE_BOLD + "[2] Password: " + DrawMenu.RESET +  DrawMenu.ITALIC + DrawMenu.LIGHT_GRAY + password + DrawMenu.RESET,
+                                    DrawMenu.BLUE_BOLD + "[3] Name: " + DrawMenu.RESET +  DrawMenu.ITALIC + DrawMenu.LIGHT_GRAY + "Enter name" + DrawMenu.RESET,
+                                    DrawMenu.BLUE_BOLD + "[4] Surname: " + DrawMenu.RESET +  DrawMenu.ITALIC + DrawMenu.LIGHT_GRAY + "Enter surname" + DrawMenu.RESET,
+                                    DrawMenu.BLUE_BOLD + "[5] Role: " + DrawMenu.RESET +  DrawMenu.ITALIC + DrawMenu.LIGHT_GRAY + "Enter role" + DrawMenu.RESET,
+                                    ""
+                            };
+                            DrawMenu.printBoxed(titleAdd, contentsAdd2);
+                            System.out.println();
+                            DrawMenu.printCenter("Name: ");
+                            String name = Input.getStringInput();
+
+                            DrawMenu.clearConsole();
+                            String[] contentsAdd3 = {
+                                    "",
+                                    DrawMenu.BLUE_BOLD + "[1] Username: " + DrawMenu.RESET +  DrawMenu.ITALIC + DrawMenu.LIGHT_GRAY + username + DrawMenu.RESET,
+                                    DrawMenu.BLUE_BOLD + "[2] Password: " + DrawMenu.RESET +  DrawMenu.ITALIC + DrawMenu.LIGHT_GRAY + password + DrawMenu.RESET,
+                                    DrawMenu.BLUE_BOLD + "[3] Name: " + DrawMenu.RESET +  DrawMenu.ITALIC + DrawMenu.LIGHT_GRAY + name + DrawMenu.RESET,
+                                    DrawMenu.BLUE_BOLD + "[4] Surname: " + DrawMenu.RESET +  DrawMenu.ITALIC + DrawMenu.LIGHT_GRAY + "Enter surname" + DrawMenu.RESET,
+                                    DrawMenu.BLUE_BOLD + "[5] Role: " + DrawMenu.RESET +  DrawMenu.ITALIC + DrawMenu.LIGHT_GRAY + "Enter role" + DrawMenu.RESET,
+                                    ""
+                            };
+                            DrawMenu.printBoxed(titleAdd, contentsAdd3);
+                            System.out.println();
+                            DrawMenu.printCenter("Surname: ");
+                            String surname = Input.getStringInput();
+
+                            DrawMenu.clearConsole();
+                            String[] contentsAdd4 = {
+                                    "",
+                                    DrawMenu.CYAN_BOLD + "[1] Manager" + DrawMenu.RESET,
+                                    DrawMenu.CYAN_BOLD + "[2] Senior" + DrawMenu.RESET,
+                                    DrawMenu.CYAN_BOLD + "[3] Junior" + DrawMenu.RESET,
+                                    DrawMenu.CYAN_BOLD + "[4] Tester" + DrawMenu.RESET,
+                                    ""
+                            };
+                            DrawMenu.printBoxed(title, contentsAdd4);
+                            System.out.println();
+                            DrawMenu.printCenter("Role: ");
+                            int role = Input.getIntInput();
+                            String roleString = "Tester";
+                            switch (role) {
+                                case 1:
+                                    roleString = "Manager";
+                                    break;
+                                case 2:
+                                    roleString = "Senior";
+                                    break;
+                                case 3:
+                                    roleString = "Junior";
+                                    break;
+                                case 4:
+                                    roleString = "Tester";
+                                    break;
+                            }
+                            User user = new User() {
+                                @Override
+                                public void showUserMenu() {
+
+                                }
+                            };
+                            user.setUsername(username);
+                            user.setPassword_hash(password);
+                            user.setName(name);
+                            user.setSurname(surname);
+                            user.setRole(roleString);
+                            this.addUser(user);
+                            break;
+                        }
+                    }
+                    System.out.println(DrawMenu.GREEN_BOLD + "User added successfully!" + DrawMenu.RESET);
+                    this.showUserMenu();
+
+                } catch (SQLException e) {
+                    DrawMenu.clearConsole();
+                    System.out.println(DrawMenu.RED_BOLD + "Database Error: Users could not fetch. Please try again." + DrawMenu.RESET);
+                    showUserMenu();
+                } catch (NumberFormatException e) {
+                    DrawMenu.clearConsole();
+                    System.out.println(DrawMenu.RED_BOLD + "Invalid input. Please try again." + DrawMenu.RESET);
+                    showUserMenu();
+                }
                 break;
             case 6:
-                this.deleteUser();
+                DrawMenu.clearConsole();
+                while(true) {
+                    try {
+                        String titleDelete = "Delete User, " + this.getName() + ", " + this.getSurname() + ", " + this.getRole();
+                        String[] contentsDelete = {
+                                "",
+                                DrawMenu.YELLOW_BOLD + "User ID: " + DrawMenu.RESET + DrawMenu.ITALIC + DrawMenu.LIGHT_GRAY + "Enter user id to delete" + DrawMenu.RESET,
+                                ""
+                        };
+                        DrawMenu.printBoxed(titleDelete, contentsDelete);
+                        System.out.println();
+                        DrawMenu.printCenter("User ID: ");
+                        int user_id = Input.getIntInput();
+                        if(!this.checkExistingUser(user_id)){
+                            DrawMenu.clearConsole();
+                            System.out.println(DrawMenu.RED_BOLD + "User not found. Please try again." + DrawMenu.RESET);
+                        } else {
+                            String[] contentsDelete2 = {
+                                    "",
+                                    DrawMenu.YELLOW_BOLD + "User ID: " + DrawMenu.RESET + DrawMenu.ITALIC + DrawMenu.LIGHT_GRAY + user_id+ DrawMenu.RESET,
+                                    ""
+                            };
+                            DrawMenu.clearConsole();
+                            DrawMenu.printBoxed(titleDelete, contentsDelete2);
+                            System.out.println();
+                            DrawMenu.printCenter(DrawMenu.PURPLE_BOLD +  "Are you sure? (y/n)" + DrawMenu.RESET);
+                            System.out.println();
+                            DrawMenu.printCenter("Your choice: ");
+                            String confirmInput = Input.getStringInput();
+                            if(confirmInput.equalsIgnoreCase("y")) {
+                                DrawMenu.clearConsole();
+                                this.deleteUser(user_id);
+                                System.out.println(DrawMenu.GREEN_BOLD + "User deleted successfully!" + DrawMenu.RESET);
+                                break;
+                            } else if(confirmInput.equalsIgnoreCase("n")) {
+                                DrawMenu.clearConsole();
+                            } else {
+                                DrawMenu.clearConsole();
+                                System.out.println(DrawMenu.RED_BOLD + "Invalid input. Please try again." + DrawMenu.RESET);
+                            }
+                        }
+                    } catch (NumberFormatException e) {
+                        DrawMenu.clearConsole();
+                        System.out.println(DrawMenu.RED_BOLD + "Invalid input. Please try again." + DrawMenu.RESET);
+                    } catch (Exception e) {
+                        DrawMenu.clearConsole();
+                        System.out.println(DrawMenu.RED_BOLD + "Database Error: Users could not fetch. Please try again." + DrawMenu.RESET);
+                    }
+                }
+                this.showUserMenu();
                 break;
             default:
                 this.logout();

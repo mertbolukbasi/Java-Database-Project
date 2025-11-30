@@ -78,6 +78,8 @@ public class Tester extends User {
             c.setPhonePrimary(resultSet.getString("phone_primary"));
             c.setEmail(resultSet.getString("email"));
             c.setBirthDate(resultSet.getDate("birth_date"));
+            c.setCreatedAt(resultSet.getDate("created_at"));
+            c.setUpdatedAt(resultSet.getDate("updated_at"));
 
             contactList.add(c);
         }
