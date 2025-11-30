@@ -75,7 +75,7 @@ public class Tester extends User {
             c.setContactId(resultSet.getInt("contact_id"));
             c.setFirstName(resultSet.getString("first_name"));
             c.setLastName(resultSet.getString("last_name"));
-            c.setPhonePrimary(resultSet.getString("phone"));
+            c.setPhonePrimary(resultSet.getString("phone_primary"));
             c.setEmail(resultSet.getString("email"));
             c.setBirthDate(resultSet.getDate("birth_date"));
 
@@ -86,7 +86,6 @@ public class Tester extends User {
     }
 
     public void listAllContacts() {
-        //TODO
         DrawMenu.clearConsole();
         try {
             ArrayList<Contact> contacts = this.getAllContacts();
