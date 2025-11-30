@@ -1,6 +1,7 @@
 package database;
 
 import model.User;
+import utils.PasswordHash;
 
 import java.sql.*;
 
@@ -25,11 +26,11 @@ public class Database {
     public static User login(String username, String password) throws SQLException {
 
         String query = "SELECT * FROM users WHERE username = ? AND password_hash = ?";
-
+        String hashPassword = PasswordHash.hash(password);
         Connection dbConnection = Database.openDatabase();
         PreparedStatement preparedStatement = dbConnection.prepareStatement(query);
         preparedStatement.setString(1, username);
-        preparedStatement.setString(2, password);
+        preparedStatement.setString(2, hashPassword);
 
         ResultSet resultSet = preparedStatement.executeQuery();
         if(resultSet.next()) {

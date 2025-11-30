@@ -3,6 +3,7 @@ package model;
 import database.Database;
 import utils.DrawMenu;
 import utils.Input;
+import utils.PasswordHash;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -267,10 +268,9 @@ public class Manager extends User {
                                     String[] userContents = {
                                             "",
                                             DrawMenu.YELLOW_BOLD + "[1] Username: " + user.getUsername() + DrawMenu.RESET,
-                                            DrawMenu.YELLOW_BOLD + "[2] Password: " + user.getPassword_hash() + DrawMenu.RESET,
-                                            DrawMenu.YELLOW_BOLD + "[3] Name: " + user.getName() + DrawMenu.RESET,
-                                            DrawMenu.YELLOW_BOLD + "[4] Surname: " + user.getSurname() + DrawMenu.RESET,
-                                            DrawMenu.YELLOW_BOLD + "[5] Role: " + user.getRole() + DrawMenu.RESET,
+                                            DrawMenu.YELLOW_BOLD + "[2] Name: " + user.getName() + DrawMenu.RESET,
+                                            DrawMenu.YELLOW_BOLD + "[3] Surname: " + user.getSurname() + DrawMenu.RESET,
+                                            DrawMenu.YELLOW_BOLD + "[4] Role: " + user.getRole() + DrawMenu.RESET,
                                             ""
                                     };
                                     DrawMenu.printBoxed(title, userContents);
