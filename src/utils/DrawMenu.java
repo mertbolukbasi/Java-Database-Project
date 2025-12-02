@@ -1,6 +1,7 @@
 package utils;
 
 import database.Database;
+import model.Junior;
 import model.Manager;
 import model.Tester;
 import model.User;
@@ -144,6 +145,19 @@ public class DrawMenu {
                         tester.setCreated_at(user.getCreated_at());
                         tester.setUpdated_at(user.getUpdated_at());
                         tester.showUserMenu();
+                        break;
+
+                    case "Junior Developer":
+                        Junior junior = new Junior();
+                        junior.setUserId(user.getUserId());
+                        junior.setUsername(user.getUsername());
+                        junior.setPassword_hash(user.getPassword_hash());
+                        junior.setName(user.getName());
+                        junior.setSurname(user.getSurname());
+                        junior.setRole(user.getRole());
+                        junior.setCreated_at(user.getCreated_at());
+                        junior.setUpdated_at(user.getUpdated_at());
+                        junior.showUserMenu();
                         break;
                 }
 
