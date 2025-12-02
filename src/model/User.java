@@ -1,6 +1,7 @@
 package model;
 
 import java.sql.Date;
+import java.sql.SQLException;
 
 public abstract class User {
 
@@ -13,7 +14,7 @@ public abstract class User {
     private Date created_at;
     private Date updated_at;
 
-    public abstract void showUserMenu();
+    public abstract void showUserMenu() throws SQLException;
 
     public void changePassword() {
         //TODO

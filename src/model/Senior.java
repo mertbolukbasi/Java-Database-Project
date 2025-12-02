@@ -12,7 +12,7 @@ import java.util.Comparator;
 public class Senior extends Junior {
 
     @Override
-    public void showUserMenu() {
+    public void showUserMenu() throws SQLException {
         String title = "Welcome " + this.getName() + " " + this.getSurname() + ", " + this.getRole();
         String[] contents = {
                 "",
@@ -98,7 +98,7 @@ public class Senior extends Junior {
         return contact;
     }
 
-    public void addContact() {
+    public void addContact() throws SQLException {
         DrawMenu.clearConsole();
         String[] contents = {""};
         DrawMenu.printBoxed("Add New Contact", contents);
@@ -243,7 +243,7 @@ public class Senior extends Junior {
         return true;
     }
 
-    public void deleteContact() {
+    public void deleteContact() throws SQLException {
         try {
             DrawMenu.clearConsole();
             String[] contents = {""};
@@ -306,7 +306,7 @@ public class Senior extends Junior {
     public void undoOperation() {
         // TODO
     }
-    public void sortContacts() {
+    public void sortContacts() throws SQLException {
 
         int choice;
         while(true) {
