@@ -166,7 +166,6 @@ public class DrawMenu {
         String[] contents = {
                 CYAN_BOLD + "id: " + user.getUserId() + RESET,
                 CYAN_BOLD + "username: " + user.getUsername() + RESET,
-                CYAN_BOLD + "password: " + user.getPassword_hash() + RESET,
                 CYAN_BOLD + "name: " + user.getName() + RESET,
                 CYAN_BOLD + "surname: " + user.getSurname() + RESET,
                 CYAN_BOLD + "role: " + user.getRole() + RESET,

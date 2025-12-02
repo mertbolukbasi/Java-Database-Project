@@ -21,6 +21,17 @@ public abstract class User {
 
     public void logout() {
         //TODO
+        utils.DrawMenu.clearConsole();
+
+        System.out.println("\n" + utils.DrawMenu.YELLOW_BOLD + "Logging out..." + utils.DrawMenu.RESET);
+        System.out.println("See you soon, " + this.getName() + "!");
+
+        try {
+            Thread.sleep(1500);
+        } catch (InterruptedException e) {
+
+        }
+        utils.DrawMenu.clearConsole();
     }
 
     public int getUserId() {
