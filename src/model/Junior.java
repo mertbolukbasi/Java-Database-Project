@@ -11,7 +11,7 @@ import java.time.format.DateTimeParseException;
 public class Junior extends Tester {
 
     @Override
-    public void showUserMenu() throws SQLException {
+    public void showUserMenu() {
         while (true) {
             String title = "Welcome " + this.getName() + " " + this.getSurname() + ", " + this.getRole();
             String[] contents = {
@@ -119,40 +119,60 @@ public class Junior extends Tester {
                     continue;
                 }
 
+                Connection conn = null;
+                PreparedStatement ps = null;
+                ResultSet rs = null;
+
+                String firstName;
+                String lastName;
+                String nickname;
+                String phone;
+                String email;
+                String birthDate;
+
                 try {
-                    Connection conn = Database.openDatabase();
+                    conn = Database.openDatabase();
                     String sql = "SELECT contact_id, first_name, last_name, nickname, " +
-                            "phone_primary, email, birth_date " +
-                            "FROM contacts WHERE contact_id = ?";
-                    PreparedStatement ps = conn.prepareStatement(sql);
+                            "phone_primary, email, birth_date FROM contacts WHERE contact_id = ?";
+                    ps = conn.prepareStatement(sql);
                     ps.setInt(1, id);
-                    ResultSet rs = ps.executeQuery();
+                    rs = ps.executeQuery();
 
                     if (!rs.next()) {
                         System.out.println(DrawMenu.RED_BOLD + "No contact found with id: " + id + DrawMenu.RESET);
-                        rs.close();
-                        ps.close();
-                        conn.close();
+                        if (rs != null) rs.close();
+                        if (ps != null) ps.close();
+                        if (conn != null) conn.close();
                         continue;
                     }
 
-                    String firstName = rs.getString("first_name");
-                    String lastName = rs.getString("last_name");
-                    String nickname = rs.getString("nickname");
-                    String phone = rs.getString("phone_primary");
-                    String email = rs.getString("email");
-                    String birthDate = rs.getString("birth_date");
+                    firstName = rs.getString("first_name");
+                    lastName = rs.getString("last_name");
+                    nickname = rs.getString("nickname");
+                    phone = rs.getString("phone_primary");
+                    email = rs.getString("email");
+                    birthDate = rs.getString("birth_date");
 
-                    rs.close();
-                    ps.close();
+                    if (rs != null) rs.close();
+                    if (ps != null) ps.close();
 
-                    DrawMenu.clearConsole();
-                    showContactBox(id, firstName, lastName, phone, email, birthDate);
+                    String line = String.format(
+                            "ID=%d | %s %s (%s) | Phone=%s | Email=%s | BirthDate=%s",
+                            id,
+                            safe(firstName),
+                            safe(lastName),
+                            safe(nickname),
+                            safe(phone),
+                            safe(email),
+                            safe(birthDate)
+                    );
 
+                    System.out.println("Current contact:");
+                    System.out.println(line);
                     System.out.println();
                     DrawMenu.printCenter("Please enter the new values for the user with ID = " + id);
                     System.out.println();
-                    DrawMenu.printCenter("Leave input empty to keep the current value.");
+                    System.out.println("Leave input empty to keep the current value.");
                     System.out.println();
 
                     while (true) {
@@ -268,11 +288,19 @@ public class Junior extends Tester {
                     int rows = updatePs.executeUpdate();
 
                     if (rows > 0) {
-                        DrawMenu.clearConsole();
                         System.out.println();
-                        DrawMenu.printCenter("Contact updated successfully. New values:");
-                        System.out.println();
-                        showContactBox(id, firstName, lastName, phone, email, birthDate);
+                        System.out.println("Contact updated successfully. New values:");
+                        String newLine = String.format(
+                                "ID=%d | %s %s (%s) | Phone=%s | Email=%s | BirthDate=%s",
+                                id,
+                                safe(firstName),
+                                safe(lastName),
+                                safe(nickname),
+                                safe(phone),
+                                safe(email),
+                                safe(birthDate)
+                        );
+                        System.out.println(newLine);
                     } else {
                         System.out.println(DrawMenu.RED_BOLD + "No rows were updated. Please check the ID." + DrawMenu.RESET);
                     }
@@ -292,8 +320,7 @@ public class Junior extends Tester {
                     DrawMenu.printCenter("Press ENTER to go back to menu...");
                     try {
                         Input.getStringInput();
-                    } catch (Exception ignored) {
-                    }
+                    } catch (Exception ignored) { }
                     DrawMenu.clearConsole();
                     return;
                 }
@@ -301,25 +328,6 @@ public class Junior extends Tester {
                 System.out.println(DrawMenu.RED_BOLD + "Unexpected error. Please try again." + DrawMenu.RESET);
             }
         }
-    }
-
-    private void showContactBox(int id, String firstName, String lastName,
-                                String phone, String email, String birthDate) {
-
-        String title = safe(firstName) + " " + safe(lastName);
-
-        String[] contents = {
-                "",
-                DrawMenu.YELLOW_BOLD + "ID: " + DrawMenu.RESET + id,
-                DrawMenu.YELLOW_BOLD + "Phone: " + DrawMenu.RESET + safe(phone),
-                DrawMenu.YELLOW_BOLD + "Email: " + DrawMenu.RESET +
-                        ((email != null && !email.isEmpty()) ? email : "N/A"),
-                DrawMenu.YELLOW_BOLD + "Birth Date: " + DrawMenu.RESET +
-                        ((birthDate != null && !birthDate.isEmpty()) ? birthDate : "N/A"),
-                ""
-        };
-
-        DrawMenu.printBoxed(title, contents);
     }
 
     private String safe(String value) {
