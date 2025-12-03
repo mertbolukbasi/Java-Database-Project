@@ -3,6 +3,6 @@ import utils.DrawMenu;
 
 public class Main {
     public static void main(String[] args) {
-        DrawMenu.showLoginScreen();
+        while(true){ DrawMenu.showLoginScreen(); }
     }
 }
