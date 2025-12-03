@@ -117,7 +117,6 @@ public class DrawMenu {
                 System.out.println(GREEN_BOLD + "Login is successful, directing..." + RESET);
                 Thread.sleep(1000);
                 clearConsole();
-                while(true) {
                     switch(user.getRole()) {
                         case "Manager":
                             Manager manager = new Manager();
@@ -171,7 +170,6 @@ public class DrawMenu {
                             senior.showUserMenu();
                             break;
                     }
-                }
             }
         } catch (SQLException e) {
             clearConsole();
