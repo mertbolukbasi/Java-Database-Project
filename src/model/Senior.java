@@ -129,12 +129,18 @@ public class Senior extends Junior {
             firstName = Input.getStringInput();
 
             if (!firstName.isEmpty()) {
+                if(firstName.equals("exit")) {
+                    DrawMenu.clearConsole();
+                    showUserMenu();
+                    break;
+                }
                 contact.setFirstName(firstName);
                 break;
             }
-
-            DrawMenu.clearConsole();
-            System.out.println(DrawMenu.RED_BOLD + "First name cannot be empty!" + DrawMenu.RESET);
+            else {
+                DrawMenu.clearConsole();
+                System.out.println(DrawMenu.RED_BOLD + "First name cannot be empty!" + DrawMenu.RESET);
+            }
         }
 
         while (true) {
@@ -156,12 +162,18 @@ public class Senior extends Junior {
             lastName = Input.getStringInput();
 
             if (!lastName.isEmpty()) {
+                if(lastName.equals("exit")) {
+                    DrawMenu.clearConsole();
+                    showUserMenu();
+                    break;
+                }
                 contact.setLastName(lastName);
                 break;
             }
-
-            DrawMenu.clearConsole();
-            System.out.println(DrawMenu.RED_BOLD + "Last name cannot be empty!" + DrawMenu.RESET);
+            else {
+                DrawMenu.clearConsole();
+                System.out.println(DrawMenu.RED_BOLD + "Last name cannot be empty!" + DrawMenu.RESET);
+            }
         }
 
         DrawMenu.clearConsole();
@@ -180,6 +192,10 @@ public class Senior extends Junior {
         System.out.println();
         DrawMenu.printCenter("Nickname (optional): ");
         nickname = Input.getStringInput();
+        if(nickname.equals("exit")) {
+            DrawMenu.clearConsole();
+            showUserMenu();
+        }
         contact.setNickname(nickname);
 
 
@@ -199,15 +215,23 @@ public class Senior extends Junior {
 
             System.out.println();
             DrawMenu.printCenter("Phone: ");
-            phone = Input.getStringInput();
-
-            if (isValidPhone(phone)) {
-                contact.setPhonePrimary(phone);
+            String temp = Input.getStringInput();
+            //phone = Input.getStringInput();
+            if(temp.equals("exit")) {
+                DrawMenu.clearConsole();
+                showUserMenu();
                 break;
             }
 
-            DrawMenu.clearConsole();
-            System.out.println(DrawMenu.RED_BOLD + "Invalid phone format!" + DrawMenu.RESET);
+            if (isValidPhone(temp)) {
+                phone = temp;
+                contact.setPhonePrimary(phone);
+                break;
+            }
+            else {
+                DrawMenu.clearConsole();
+                System.out.println(DrawMenu.RED_BOLD + "Invalid phone format!" + DrawMenu.RESET);
+            }
         }
 
         while (true) {
@@ -226,15 +250,22 @@ public class Senior extends Junior {
 
             System.out.println();
             DrawMenu.printCenter("Email: ");
-            email = Input.getStringInput();
-
-            if (isValidMail(email)) {
+            String temp = Input.getStringInput();
+            //email = Input.getStringInput();
+            if(temp.equals("exit")) {
+                DrawMenu.clearConsole();
+                showUserMenu();
+                break;
+            }
+            if (isValidMail(temp)) {
+                email = temp;
                 contact.setEmail(email);
                 break;
             }
-
-            DrawMenu.clearConsole();
-            System.out.println(DrawMenu.RED_BOLD + "Invalid email format!" + DrawMenu.RESET);
+            else {
+                DrawMenu.clearConsole();
+                System.out.println(DrawMenu.RED_BOLD + "Invalid email format!" + DrawMenu.RESET);
+            }
         }
 
         while (true) {
@@ -253,17 +284,23 @@ public class Senior extends Junior {
 
             System.out.println();
             DrawMenu.printCenter("Birth Date (YYYY-MM-DD or blank): ");
-            birthDate = Input.getStringInput();
-
-            if (!birthDate.isEmpty()) {
-                if (isValidBirthDay(birthDate)) {
-                    contact.setBirthDate(Date.valueOf(birthDate));
-                    break;
-                }
+            String temp = Input.getStringInput();
+            //birthDate = Input.getStringInput();
+            if(temp.equals("exit")) {
+                DrawMenu.clearConsole();
+                showUserMenu();
+                break;
+            }
+            if (isValidBirthDay(temp)) {
+                birthDate = temp;
+                contact.setBirthDate(Date.valueOf(birthDate));
+                break;
             }
 
-            DrawMenu.clearConsole();
-            System.out.println(DrawMenu.RED_BOLD + "Invalid date format!" + DrawMenu.RESET);
+            else {
+                DrawMenu.clearConsole();
+                System.out.println(DrawMenu.RED_BOLD + "Invalid date format! or You can not leave here Empty!" + DrawMenu.RESET);
+            }
         }
 
         try {
@@ -295,6 +332,9 @@ public class Senior extends Junior {
     public static boolean isValidBirthDay(String date) {
 
         date = date.replaceAll("\\s+", "");
+        if (date.isEmpty()) {
+            return false;
+        }
         if(date.length() < 10)
             return false;
         if((date.charAt(4) != '-') || (date.charAt(7) != '-'))
@@ -315,7 +355,7 @@ public class Senior extends Junior {
 
         int atIndex = email.indexOf('@');
 
-        if(atIndex == 0)
+        if(atIndex <= 0)
             return false;
         if(email.indexOf('@', atIndex + 1) != -1)
             return false;
@@ -334,6 +374,7 @@ public class Senior extends Junior {
 
         return true;
     }
+    //format 05332100598
     public static boolean isValidPhone(String phone) {
         if(phone.isEmpty())
             return false;
@@ -398,8 +439,6 @@ public class Senior extends Junior {
             DrawMenu.printCenter("Your choice: ");
             String confirm;
             while(true) {
-
-                DrawMenu.printCenter("Are you sure you want to delete " + contact.getFirstName() + " " + contact.getLastName() + "? (y/n): ");
                 confirm = Input.getStringInput().toLowerCase();
                 if (confirm.equals("y") || confirm.equals("n")) {
                     break;
@@ -507,6 +546,7 @@ public class Senior extends Junior {
             }
         }
     }
+    //sort contact uses this one
     private void printContact(Contact c) {
         String title = c.getFirstName() + " " + c.getLastName();
 
