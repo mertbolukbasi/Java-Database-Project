@@ -11,7 +11,7 @@ import java.time.format.DateTimeParseException;
 public class Junior extends Tester {
 
     @Override
-    public void showUserMenu() {
+    public void showUserMenu() throws SQLException {
         while (true) {
             String title = "Welcome " + this.getName() + " " + this.getSurname() + ", " + this.getRole();
             String[] contents = {

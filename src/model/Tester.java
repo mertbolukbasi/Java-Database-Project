@@ -10,7 +10,7 @@ import java.util.ArrayList;
 public class Tester extends User {
 
     @Override
-    public void showUserMenu() {
+    public void showUserMenu() throws SQLException {
         while (true) {
             String title = "Welcome " + this.getName() + " " + this.getSurname() + ", " + this.getRole();
             String[] contents = {
