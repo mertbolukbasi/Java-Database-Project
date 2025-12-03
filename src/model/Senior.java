@@ -98,61 +98,172 @@ public class Senior extends Junior {
         return contact;
     }
 
-    public void addContact() throws SQLException {
+    public void addContact() {
+
+        String title = "Add New Contact";
+
+        String firstName = "";
+        String lastName = "";
+        String nickname = "";
+        String phone = "";
+        String email = "";
+        String birthDate = "";
+
+        Contact contact = new Contact();
+
+        while (true) {
+            String[] contentTable1 = {
+                    "",
+                    DrawMenu.BLUE_BOLD + "[1] First Name: " + DrawMenu.RESET + DrawMenu.ITALIC + DrawMenu.LIGHT_GRAY + (firstName.isEmpty() ? "Enter first name" : firstName) + DrawMenu.RESET,
+                    DrawMenu.BLUE_BOLD + "[2] Last Name: " + DrawMenu.RESET + DrawMenu.ITALIC + DrawMenu.LIGHT_GRAY + "Enter last name" + DrawMenu.RESET,
+                    DrawMenu.BLUE_BOLD + "[3] Nickname: " + DrawMenu.RESET + DrawMenu.ITALIC + DrawMenu.LIGHT_GRAY + "Optional" + DrawMenu.RESET,
+                    DrawMenu.BLUE_BOLD + "[4] Phone: " + DrawMenu.RESET + DrawMenu.ITALIC + DrawMenu.LIGHT_GRAY + "Enter phone number" + DrawMenu.RESET,
+                    DrawMenu.BLUE_BOLD + "[5] Email: " + DrawMenu.RESET + DrawMenu.ITALIC + DrawMenu.LIGHT_GRAY + "Enter email" + DrawMenu.RESET,
+                    DrawMenu.BLUE_BOLD + "[6] Birth Date: " + DrawMenu.RESET + DrawMenu.ITALIC + DrawMenu.LIGHT_GRAY + "YYYY-MM-DD" + DrawMenu.RESET,
+                    ""
+            };
+            DrawMenu.printBoxed(title, contentTable1);
+
+            System.out.println();
+            DrawMenu.printCenter("First Name: ");
+            firstName = Input.getStringInput();
+
+            if (!firstName.isEmpty()) {
+                contact.setFirstName(firstName);
+                break;
+            }
+
+            DrawMenu.clearConsole();
+            System.out.println(DrawMenu.RED_BOLD + "First name cannot be empty!" + DrawMenu.RESET);
+        }
+
+        while (true) {
+            DrawMenu.clearConsole();
+            String[] contentTable2 = {
+                    "",
+                    DrawMenu.BLUE_BOLD + "[1] First Name: " + DrawMenu.RESET + firstName,
+                    DrawMenu.BLUE_BOLD + "[2] Last Name: " + DrawMenu.RESET + DrawMenu.ITALIC + DrawMenu.LIGHT_GRAY + (lastName.isEmpty() ? "Enter last name" : lastName) + DrawMenu.RESET,
+                    DrawMenu.BLUE_BOLD + "[3] Nickname: " + DrawMenu.RESET + DrawMenu.ITALIC + DrawMenu.LIGHT_GRAY + "Optional" + DrawMenu.RESET,
+                    DrawMenu.BLUE_BOLD + "[4] Phone: " + DrawMenu.RESET + DrawMenu.ITALIC + DrawMenu.LIGHT_GRAY + "Enter phone number" + DrawMenu.RESET,
+                    DrawMenu.BLUE_BOLD + "[5] Email: " + DrawMenu.RESET + DrawMenu.ITALIC + DrawMenu.LIGHT_GRAY + "Enter email" + DrawMenu.RESET,
+                    DrawMenu.BLUE_BOLD + "[6] Birth Date: " + DrawMenu.RESET + DrawMenu.ITALIC + DrawMenu.LIGHT_GRAY + "YYYY-MM-DD" + DrawMenu.RESET,
+                    ""
+            };
+            DrawMenu.printBoxed(title, contentTable2);
+
+            System.out.println();
+            DrawMenu.printCenter("Last Name: ");
+            lastName = Input.getStringInput();
+
+            if (!lastName.isEmpty()) {
+                contact.setLastName(lastName);
+                break;
+            }
+
+            DrawMenu.clearConsole();
+            System.out.println(DrawMenu.RED_BOLD + "Last name cannot be empty!" + DrawMenu.RESET);
+        }
+
         DrawMenu.clearConsole();
-        String[] contents = {""};
-        DrawMenu.printBoxed("Add New Contact", contents);
+        String[] contentTable3 = {
+                "",
+                DrawMenu.BLUE_BOLD + "[1] First Name: " + DrawMenu.RESET + firstName,
+                DrawMenu.BLUE_BOLD + "[2] Last Name: " + DrawMenu.RESET + lastName,
+                DrawMenu.BLUE_BOLD + "[3] Nickname: " + DrawMenu.RESET + DrawMenu.ITALIC + DrawMenu.LIGHT_GRAY + (nickname.isEmpty() ? "Optional" : nickname) + DrawMenu.RESET,
+                DrawMenu.BLUE_BOLD + "[4] Phone: " + DrawMenu.RESET + DrawMenu.ITALIC + DrawMenu.LIGHT_GRAY + "Enter phone number" + DrawMenu.RESET,
+                DrawMenu.BLUE_BOLD + "[5] Email: " + DrawMenu.RESET + DrawMenu.ITALIC + DrawMenu.LIGHT_GRAY + "Enter email" + DrawMenu.RESET,
+                DrawMenu.BLUE_BOLD + "[6] Birth Date: " + DrawMenu.RESET + DrawMenu.ITALIC + DrawMenu.LIGHT_GRAY + "YYYY-MM-DD" + DrawMenu.RESET,
+                ""
+        };
+        DrawMenu.printBoxed(title, contentTable3);
 
-        Contact c = new Contact();
+        System.out.println();
+        DrawMenu.printCenter("Nickname (optional): ");
+        nickname = Input.getStringInput();
+        contact.setNickname(nickname);
 
-        System.out.print("First Name: ");
-        c.setFirstName(Input.getStringInput());
-        System.out.print("Last Name: ");
-        c.setLastName(Input.getStringInput());
-        System.out.print("Nickname(optional): ");
-        c.setNickname(Input.getStringInput());
 
-        while(true) {
-            System.out.print("Phone Number (you have to enter a phone in following format -> 0(___)___ __ __: ");
-            String phone = Input.getStringInput();
+        while (true) {
+            DrawMenu.clearConsole();
+            String[] contentTable4 = {
+                    "",
+                    DrawMenu.BLUE_BOLD + "[1] First Name: " + DrawMenu.RESET + firstName,
+                    DrawMenu.BLUE_BOLD + "[2] Last Name: " + DrawMenu.RESET + lastName,
+                    DrawMenu.BLUE_BOLD + "[3] Nickname: " + DrawMenu.RESET + nickname,
+                    DrawMenu.BLUE_BOLD + "[4] Phone: " + DrawMenu.RESET + DrawMenu.ITALIC + DrawMenu.LIGHT_GRAY + (phone.isEmpty() ? "0(___)___ __ __" : phone) + DrawMenu.RESET,
+                    DrawMenu.BLUE_BOLD + "[5] Email: " + DrawMenu.RESET + DrawMenu.ITALIC + DrawMenu.LIGHT_GRAY + "Enter email" + DrawMenu.RESET,
+                    DrawMenu.BLUE_BOLD + "[6] Birth Date: " + DrawMenu.RESET + DrawMenu.ITALIC + DrawMenu.LIGHT_GRAY + "YYYY-MM-DD" + DrawMenu.RESET,
+                    ""
+            };
+            DrawMenu.printBoxed(title, contentTable4);
 
-            if(isValidPhone(phone)) {
-                c.setPhonePrimary(phone);
+            System.out.println();
+            DrawMenu.printCenter("Phone: ");
+            phone = Input.getStringInput();
+
+            if (isValidPhone(phone)) {
+                contact.setPhonePrimary(phone);
                 break;
             }
-            else {
-                System.out.println("Invalid phone number. Please enter a valid phone number according to format 0(___)___ __ __.");
-            }
+
+            DrawMenu.clearConsole();
+            System.out.println(DrawMenu.RED_BOLD + "Invalid phone format!" + DrawMenu.RESET);
         }
 
-        while(true) {
-            System.out.print("Email: ");
-            String email = Input.getStringInput();
-            c.setEmail(email);
-            if(isValidMail(email)) {
-                c.setEmail(email);
+        while (true) {
+            DrawMenu.clearConsole();
+            String[] contentTable5 = {
+                    "",
+                    DrawMenu.BLUE_BOLD + "[1] First Name: " + DrawMenu.RESET + firstName,
+                    DrawMenu.BLUE_BOLD + "[2] Last Name: " + DrawMenu.RESET + lastName,
+                    DrawMenu.BLUE_BOLD + "[3] Nickname: " + DrawMenu.RESET + nickname,
+                    DrawMenu.BLUE_BOLD + "[4] Phone: " + DrawMenu.RESET + phone,
+                    DrawMenu.BLUE_BOLD + "[5] Email: " + DrawMenu.RESET + DrawMenu.ITALIC + DrawMenu.LIGHT_GRAY + (email.isEmpty() ? "example@mail.com" : email) + DrawMenu.RESET,
+                    DrawMenu.BLUE_BOLD + "[6] Birth Date: " + DrawMenu.RESET + DrawMenu.ITALIC + DrawMenu.LIGHT_GRAY + "YYYY-MM-DD" + DrawMenu.RESET,
+                    ""
+            };
+            DrawMenu.printBoxed(title, contentTable5);
+
+            System.out.println();
+            DrawMenu.printCenter("Email: ");
+            email = Input.getStringInput();
+
+            if (isValidMail(email)) {
+                contact.setEmail(email);
                 break;
             }
-            else {
-                System.out.println("Invalid format for email. Please enter a valid email(contains only one @ and at least one dot after @).");
-            }
+
+            DrawMenu.clearConsole();
+            System.out.println(DrawMenu.RED_BOLD + "Invalid email format!" + DrawMenu.RESET);
         }
 
-        while(true) {
-            System.out.print("Birth Date (YYYY-MM-DD or leave blank): ");
-            String birth = Input.getStringInput();
-            if (birth.isEmpty()) {
-                c.setBirthDate(null);
-            }
-            else {
-                if(isValidBirthDay(birth)) {
-                    c.setBirthDate(Date.valueOf(birth));
+        while (true) {
+            DrawMenu.clearConsole();
+            String[] contentTable6 = {
+                    "",
+                    DrawMenu.BLUE_BOLD + "[1] First Name: " + DrawMenu.RESET + firstName,
+                    DrawMenu.BLUE_BOLD + "[2] Last Name: " + DrawMenu.RESET + lastName,
+                    DrawMenu.BLUE_BOLD + "[3] Nickname: " + DrawMenu.RESET + nickname,
+                    DrawMenu.BLUE_BOLD + "[4] Phone: " + DrawMenu.RESET + phone,
+                    DrawMenu.BLUE_BOLD + "[5] Email: " + DrawMenu.RESET + email,
+                    DrawMenu.BLUE_BOLD + "[6] Birth Date: " + DrawMenu.RESET + DrawMenu.ITALIC + DrawMenu.LIGHT_GRAY + (birthDate.isEmpty() ? "YYYY-MM-DD" : birthDate) + DrawMenu.RESET,
+                    ""
+            };
+            DrawMenu.printBoxed(title, contentTable6);
+
+            System.out.println();
+            DrawMenu.printCenter("Birth Date (YYYY-MM-DD or blank): ");
+            birthDate = Input.getStringInput();
+
+            if (!birthDate.isEmpty()) {
+                if (isValidBirthDay(birthDate)) {
+                    contact.setBirthDate(Date.valueOf(birthDate));
                     break;
                 }
-                else{
-                    System.out.println("Invalid birth date. Please enter a valid birth date in the format(YYYY-MM-DD).");
-                }
             }
+
+            DrawMenu.clearConsole();
+            System.out.println(DrawMenu.RED_BOLD + "Invalid date format!" + DrawMenu.RESET);
         }
 
         try {
@@ -162,12 +273,12 @@ public class Senior extends Junior {
 
             PreparedStatement ps = dbConnection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 
-            ps.setString(1, c.getFirstName());
-            ps.setString(2, c.getLastName());
-            ps.setString(3, c.getNickname());
-            ps.setString(4, c.getPhonePrimary());
-            ps.setString(5, c.getEmail());
-            ps.setObject(6, c.getBirthDate());
+            ps.setString(1, contact.getFirstName());
+            ps.setString(2, contact.getLastName());
+            ps.setString(3, contact.getNickname());
+            ps.setString(4, contact.getPhonePrimary());
+            ps.setString(5, contact.getEmail());
+            ps.setObject(6, contact.getBirthDate());
 
             ps.executeUpdate();
             dbConnection.close();
@@ -243,26 +354,48 @@ public class Senior extends Junior {
         return true;
     }
 
-    public void deleteContact() throws SQLException {
-        try {
-            DrawMenu.clearConsole();
-            String[] contents = {""};
-            DrawMenu.printBoxed("Delete Contact", contents);
+    public void deleteContact() {
 
-            System.out.println();
+        DrawMenu.clearConsole();
+        try {
+            int contactId;
+            String titleDelete = "Delete Contact, " + this.getName() + " " + this.getSurname() + ", " + this.getRole();
+
+            String[] contentsDelete = {
+                    "",
+                    DrawMenu.YELLOW_BOLD + "Contact ID: " + DrawMenu.RESET + DrawMenu.ITALIC + DrawMenu.LIGHT_GRAY + "Enter contact id to delete" + DrawMenu.RESET,
+                    ""
+            };
             Contact contact;
             while(true) {
-                DrawMenu.printCenter("Enter Contact ID to delete: ");
-                int id = Input.getIntInput();
-                contact = getContactById(id);
-                if(contact.getContactId() != 0)
-                    break;
-                else {
-                    DrawMenu.clearConsole();
-                    System.out.println(DrawMenu.RED_BOLD + "No such contact found!");
-                }
-            }
+                DrawMenu.printBoxed(titleDelete, contentsDelete);
+                System.out.println();
+                DrawMenu.printCenter("Contact ID: ");
+                contactId = Input.getIntInput();
 
+                contact = getContactById(contactId);
+
+                if (contact.getContactId() == 0) {
+                    DrawMenu.clearConsole();
+                    System.out.println(DrawMenu.RED_BOLD + "Contact not found. Please try again." + DrawMenu.RESET);
+                }
+                else
+                    break;
+            }
+            String[] contentsDelete2 = {
+                    "",
+                    DrawMenu.YELLOW_BOLD + "Contact ID: " + DrawMenu.RESET + DrawMenu.ITALIC + DrawMenu.LIGHT_GRAY + contactId + DrawMenu.RESET,
+                    ""
+            };
+            DrawMenu.clearConsole();
+            DrawMenu.printBoxed(titleDelete, contentsDelete2);
+            System.out.println();
+
+            DrawMenu.printCenter(
+                    DrawMenu.PURPLE_BOLD + "Are you sure you want to delete " + contact.getFirstName() + " " + contact.getLastName() + "? (y/n)" + DrawMenu.RESET
+            );
+            System.out.println();
+            DrawMenu.printCenter("Your choice: ");
             String confirm;
             while(true) {
 
@@ -280,6 +413,7 @@ public class Senior extends Junior {
             int id=contact.getContactId();
 
             if (confirm.equals("n")) {
+                DrawMenu.clearConsole();
                 System.out.println("Deletion cancelled.");
                 showUserMenu();
                 return;
@@ -296,8 +430,7 @@ public class Senior extends Junior {
                 System.out.println(DrawMenu.GREEN_BOLD + "Contact deleted successfully!" + DrawMenu.RESET);
                 showUserMenu();
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             DrawMenu.clearConsole();
             System.out.println(DrawMenu.RED_BOLD + "Database Error");
             showUserMenu();
