@@ -10,7 +10,7 @@ import java.util.ArrayList;
 public class Tester extends User {
 
     @Override
-    public void showUserMenu() throws SQLException {
+    public void showUserMenu() {
         while (true) {
             String title = "Welcome " + this.getName() + " " + this.getSurname() + ", " + this.getRole();
             String[] contents = {
@@ -103,17 +103,23 @@ public class Tester extends User {
             int contactCount = contacts.size();
             int currentContactIndex = 1;
 
-            while (loop) {
+            while(loop) {
                 String inputStr;
 
                 label:
-                while (true) {
+                while(true) {
                     DrawMenu.clearConsole();
 
                     Contact currentContact = contacts.get(currentContactIndex - 1);
 
-                    // Normal ekran (mesajsız)
-                    showContactScreen(currentContact, currentContactIndex, contactCount, "");
+                    printContactDetails(currentContact);
+
+                    System.out.println();
+                    DrawMenu.printCenter("< " + currentContactIndex + "/" + contactCount + " >");
+                    System.out.println();
+                    DrawMenu.printCenter("Previous: A, Next: D, Exit: Type 'exit'");
+                    System.out.println();
+                    DrawMenu.printCenter("Your choice: ");
 
                     inputStr = Input.getStringInput().toLowerCase();
 
@@ -123,15 +129,11 @@ public class Tester extends User {
                                 currentContactIndex--;
                                 break label;
                             } else {
-                                // Listenin başına gelince uyarı
                                 DrawMenu.clearConsole();
-                                showContactScreen(
-                                        currentContact,
-                                        currentContactIndex,
-                                        contactCount,
-                                        DrawMenu.RED_BOLD + "You reached the start of the list." + DrawMenu.RESET
-                                );
-                                Input.getStringInput(); // Press Enter
+                                printContactDetails(currentContact);
+                                System.out.println("\n" + DrawMenu.RED_BOLD + "You reached the start of the list." + DrawMenu.RESET);
+                                System.out.println("Press Enter to continue...");
+                                Input.getStringInput();
                                 break label;
                             }
                         case "d":
@@ -139,30 +141,22 @@ public class Tester extends User {
                                 currentContactIndex++;
                                 break label;
                             } else {
-                                // Listenin sonuna gelince uyarı
                                 DrawMenu.clearConsole();
-                                showContactScreen(
-                                        currentContact,
-                                        currentContactIndex,
-                                        contactCount,
-                                        DrawMenu.RED_BOLD + "You reached the end of the list." + DrawMenu.RESET
-                                );
-                                Input.getStringInput(); // Press Enter
+                                printContactDetails(currentContact);
+                                System.out.println("\n" + DrawMenu.RED_BOLD + "You reached the end of the list." + DrawMenu.RESET);
+                                System.out.println("Press Enter to continue...");
+                                Input.getStringInput();
                                 break label;
                             }
                         case "exit":
                             loop = false;
                             break label;
                         default:
-                            // Geçersiz input uyarısı
                             DrawMenu.clearConsole();
-                            showContactScreen(
-                                    currentContact,
-                                    currentContactIndex,
-                                    contactCount,
-                                    DrawMenu.RED_BOLD + "Invalid input. Use A, D or exit." + DrawMenu.RESET
-                            );
-                            Input.getStringInput(); // Press Enter
+                            printContactDetails(currentContact);
+                            System.out.println("\n" + DrawMenu.RED_BOLD + "Invalid input. Use A, D or exit." + DrawMenu.RESET);
+                            System.out.println("Press Enter to continue...");
+                            Input.getStringInput();
                             break label;
                     }
                 }
@@ -176,36 +170,6 @@ public class Tester extends User {
         DrawMenu.clearConsole();
     }
 
-    // Yeni yardımcı fonksiyon: kart + navigasyon + mesaj
-    private void showContactScreen(Contact c, int currentIndex, int totalCount, String message) {
-        String title = c.getFirstName() + " " + c.getLastName();
-        String[] contents = {
-                "",
-                DrawMenu.YELLOW_BOLD + "ID: " + DrawMenu.RESET + c.getContactId(),
-                DrawMenu.YELLOW_BOLD + "Phone: " + DrawMenu.RESET + c.getPhonePrimary(),
-                DrawMenu.YELLOW_BOLD + "Email: " + DrawMenu.RESET + (c.getEmail() != null ? c.getEmail() : "N/A"),
-                DrawMenu.YELLOW_BOLD + "Birth Date: " + DrawMenu.RESET + (c.getBirthDate() != null ? c.getBirthDate() : "N/A"),
-                ""
-        };
-        DrawMenu.printBoxed(title, contents);
-
-        System.out.println();
-        DrawMenu.printCenter("< " + currentIndex + "/" + totalCount + " >");
-        System.out.println();
-        DrawMenu.printCenter("Previous: A, Next: D, Exit: Type 'exit'");
-        System.out.println();
-
-        if (message != null && !message.isEmpty()) {
-            DrawMenu.printCenter(message);
-            System.out.println();
-            DrawMenu.printCenter("Press Enter to continue...");
-            System.out.println();
-        } else {
-            DrawMenu.printCenter("Your choice: ");
-        }
-    }
-
-    // Eski fonksiyon duruyor; search ekranları bunu kullanıyor
     private void printContactDetails(Contact c) {
         String title = c.getFirstName() + " " + c.getLastName();
         String[] contents = {
@@ -274,6 +238,7 @@ public class Tester extends User {
                     continue;
             }
 
+
             System.out.println();
             DrawMenu.printCenter("Enter " + displayName + " to search: ");
             String searchTerm = sc.nextLine().trim();
@@ -302,6 +267,7 @@ public class Tester extends User {
                 sc.nextLine();
                 return;
             }
+
 
             if (results.isEmpty()) {
                 System.out.println(DrawMenu.RED_BOLD + "No contacts found matching '" + searchTerm + "'!" + DrawMenu.RESET);
@@ -519,4 +485,3 @@ public class Tester extends User {
         }
     }
 }
-
