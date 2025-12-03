@@ -469,7 +469,8 @@ public class Senior extends Junior {
                 System.out.println(DrawMenu.GREEN_BOLD + "Contact deleted successfully!" + DrawMenu.RESET);
                 showUserMenu();
             }
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             DrawMenu.clearConsole();
             System.out.println(DrawMenu.RED_BOLD + "Database Error");
             showUserMenu();
@@ -480,8 +481,32 @@ public class Senior extends Junior {
     }
     public void sortContacts() throws SQLException {
 
+        ArrayList<Contact> list;
+
+        try {
+            list = getAllContacts();
+        }
+        catch (SQLException e) {
+            DrawMenu.clearConsole();
+            System.out.println(DrawMenu.RED_BOLD + "Database Error: Contacts could not be fetched." + DrawMenu.RESET);
+            System.out.println("Press Enter to return...");
+            Input.getStringInput();
+            showUserMenu();
+            return;
+        }
+
+        if (list.isEmpty()) {
+            DrawMenu.clearConsole();
+            System.out.println(DrawMenu.RED_BOLD + "No contacts found in the database!" + DrawMenu.RESET);
+            System.out.println("Press Enter to return...");
+            Input.getStringInput();
+            showUserMenu();
+            return;
+        }
+
         int choice;
-        while(true) {
+
+        while (true) {
             DrawMenu.clearConsole();
             String[] contents = {
                     "",
@@ -493,56 +518,125 @@ public class Senior extends Junior {
                     DrawMenu.YELLOW_BOLD + "[6]" + DrawMenu.RESET + " Sort by Created Date (Oldest First)",
                     ""
             };
+
             DrawMenu.printBoxed("Sort Contacts", contents);
             System.out.println();
             DrawMenu.printCenter("Your choice: ");
+
             choice = Input.getIntInput();
-            if(choice < 1 || choice > 6) {
+
+            if (choice < 1 || choice > 6) {
                 DrawMenu.clearConsole();
-                System.out.println("Invalid choice. Please enter a valid choice.");
+                System.out.println(DrawMenu.RED_BOLD + "Invalid choice. Please enter a valid choice." + DrawMenu.RESET);
             }
-            else {
+            else
                 break;
-            }
         }
 
-        ArrayList<Contact> list = getAllContacts();
+        Comparator<String> nullSafeString = Comparator.nullsLast(String::compareToIgnoreCase);
+        Comparator<Date> nullSafeDate = Comparator.nullsLast(Date::compareTo);
 
-        switch(choice) {
-            case 1:
-                list.sort(Comparator.comparing(Contact::getFirstName));
-                break;
-            case 2:
-                list.sort(Comparator.comparing(Contact::getFirstName).reversed());
-                break;
-            case 3:
-                list.sort(Comparator.comparing(Contact::getLastName));
-                break;
-            case 4:
-                list.sort(Comparator.comparing(Contact::getLastName).reversed());
-                break;
-            case 5:
-                list.sort(Comparator.comparing(Contact::getCreatedAt).reversed());
-                break;
-            case 6:
-                list.sort(Comparator.comparing(Contact::getCreatedAt));
-                break;
+        try {
+            switch (choice) {
+                case 1:
+                    list.sort(Comparator.comparing(Contact::getFirstName, nullSafeString));
+                    break;
+                case 2:
+                    list.sort(Comparator.comparing(Contact::getFirstName, nullSafeString).reversed());
+                    break;
+                case 3:
+                    list.sort(Comparator.comparing(Contact::getLastName, nullSafeString));
+                    break;
+                case 4:
+                    list.sort(Comparator.comparing(Contact::getLastName, nullSafeString).reversed());
+                    break;
+                case 5:
+                    list.sort(Comparator.comparing(Contact::getCreatedAt, nullSafeDate).reversed());
+                    break;
+                case 6:
+                    list.sort(Comparator.comparing(Contact::getCreatedAt, nullSafeDate));
+                    break;
+            }
         }
-        DrawMenu.clearConsole();
-        for (Contact c : list) {
-            printContact(c);
-            System.out.println();
+        catch (Exception e) {
+            DrawMenu.clearConsole();
+            System.out.println(DrawMenu.RED_BOLD + "Sorting Error: Could not sort contacts. " + e.getMessage() + DrawMenu.RESET);
+            System.out.println("Press Enter to return...");
+            Input.getStringInput();
+            showUserMenu();
+            return;
         }
-        System.out.println();
-        DrawMenu.printCenter("Press 1 to go user menu: ");
-        while(true) {
-            String intput = Input.getStringInput();
-            if (intput.equals("1")) {
+
+        boolean loop = true;
+        int contactCount = list.size();
+        int currentIndex = 1;
+
+        while (loop) {
+
+            String inputStr;
+
+            label:
+            while (true) {
+                DrawMenu.clearConsole();
+
+                Contact currentContact = list.get(currentIndex - 1);
+                printContact(currentContact);
+
+                System.out.println();
+                DrawMenu.printCenter(DrawMenu.YELLOW_BOLD + "< " + currentIndex + "/" + contactCount + " >" + DrawMenu.RESET);
+                System.out.println();
+                DrawMenu.printCenter("Previous: A, Next: D, Exit: 'exit'");
+                System.out.println();
+                DrawMenu.printCenter("Your choice: ");
+
+                inputStr = Input.getStringInput().toLowerCase();
+
+                switch (inputStr) {
+                    case "a":
+                        if (currentIndex > 1) {
+                            currentIndex--;
+                            break label;
+                        }
+                        else {
+                            DrawMenu.clearConsole();
+                            printContact(currentContact);
+                            System.out.println("\n" + DrawMenu.RED_BOLD + "You reached the start of the list." + DrawMenu.RESET);
+                            System.out.println("Press Enter to continue...");
+                            Input.getStringInput();
+                            break label;
+                        }
+
+                    case "d":
+                        if (currentIndex < contactCount) {
+                            currentIndex++;
+                            break label;
+                        }
+                        else {
+                            DrawMenu.clearConsole();
+                            printContact(currentContact);
+                            System.out.println("\n" + DrawMenu.RED_BOLD + "You reached the end of the list." + DrawMenu.RESET);
+                            System.out.println("Press Enter to continue...");
+                            Input.getStringInput();
+                            break label;
+                        }
+
+                    case "exit":
+                        loop = false;
+                        break label;
+
+                    default:
+                        DrawMenu.clearConsole();
+                        printContact(currentContact);
+                        System.out.println("\n" + DrawMenu.RED_BOLD + "Invalid input. Use A, D or exit." + DrawMenu.RESET);
+                        System.out.println("Press Enter to continue...");
+                        Input.getStringInput();
+                        break label;
+                }
+            }
+            if (!loop) {
                 DrawMenu.clearConsole();
                 showUserMenu();
-                break;
-            } else {
-                System.out.println("Invalid input. Please try again.");
+                return;
             }
         }
     }
@@ -561,7 +655,6 @@ public class Senior extends Junior {
                 DrawMenu.CYAN_BOLD + "Created At: " + DrawMenu.RESET + c.getCreatedAt(),
                 DrawMenu.CYAN_BOLD + "Updated At: " + DrawMenu.RESET + c.getUpdatedAt()
         };
-
         DrawMenu.printBoxed(title, content);
     }
 }
