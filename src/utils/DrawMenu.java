@@ -1,9 +1,7 @@
 package utils;
 
 import database.Database;
-import model.Manager;
-import model.Tester;
-import model.User;
+import model.*;
 
 import java.sql.SQLException;
 import java.util.NoSuchElementException;
@@ -119,35 +117,61 @@ public class DrawMenu {
                 System.out.println(GREEN_BOLD + "Login is successful, directing..." + RESET);
                 Thread.sleep(1000);
                 clearConsole();
-                switch(user.getRole()) {
-                    case "Manager":
-                        Manager manager = new Manager();
-                        manager.setUserId(user.getUserId());
-                        manager.setUsername(user.getUsername());
-                        manager.setPassword_hash(user.getPassword_hash());
-                        manager.setName(user.getName());
-                        manager.setSurname(user.getSurname());
-                        manager.setRole(user.getRole());
-                        manager.setCreated_at(user.getCreated_at());
-                        manager.setUpdated_at(user.getUpdated_at());
-                        manager.showUserMenu();
-                        break;
+                while(true) {
+                    switch(user.getRole()) {
+                        case "Manager":
+                            Manager manager = new Manager();
+                            manager.setUserId(user.getUserId());
+                            manager.setUsername(user.getUsername());
+                            manager.setPassword_hash(user.getPassword_hash());
+                            manager.setName(user.getName());
+                            manager.setSurname(user.getSurname());
+                            manager.setRole(user.getRole());
+                            manager.setCreated_at(user.getCreated_at());
+                            manager.setUpdated_at(user.getUpdated_at());
+                            manager.showUserMenu();
+                            break;
 
-                    case "Tester":
-                        Tester tester = new Tester();
-                        tester.setUserId(user.getUserId());
-                        tester.setUsername(user.getUsername());
-                        tester.setPassword_hash(user.getPassword_hash());
-                        tester.setName(user.getName());
-                        tester.setSurname(user.getSurname());
-                        tester.setRole(user.getRole());
-                        tester.setCreated_at(user.getCreated_at());
-                        tester.setUpdated_at(user.getUpdated_at());
-                        tester.showUserMenu();
-                        break;
+                        case "Tester":
+                            Tester tester = new Tester();
+                            tester.setUserId(user.getUserId());
+                            tester.setUsername(user.getUsername());
+                            tester.setPassword_hash(user.getPassword_hash());
+                            tester.setName(user.getName());
+                            tester.setSurname(user.getSurname());
+                            tester.setRole(user.getRole());
+                            tester.setCreated_at(user.getCreated_at());
+                            tester.setUpdated_at(user.getUpdated_at());
+                            tester.showUserMenu();
+                            break;
+
+                        case "Junior Developer":
+                            Junior junior = new Junior();
+                            junior.setUserId(user.getUserId());
+                            junior.setUsername(user.getUsername());
+                            junior.setPassword_hash(user.getPassword_hash());
+                            junior.setName(user.getName());
+                            junior.setSurname(user.getSurname());
+                            junior.setRole(user.getRole());
+                            junior.setCreated_at(user.getCreated_at());
+                            junior.setUpdated_at(user.getUpdated_at());
+                            junior.showUserMenu();
+                            break;
+
+                        case "Senior Developer":
+                            Senior senior = new Senior();
+                            senior.setUserId(user.getUserId());
+                            senior.setUsername(user.getUsername());
+                            senior.setPassword_hash(user.getPassword_hash());
+                            senior.setName(user.getName());
+                            senior.setSurname(user.getSurname());
+                            senior.setRole(user.getRole());
+                            senior.setCreated_at(user.getCreated_at());
+                            senior.setUpdated_at(user.getUpdated_at());
+                            senior.showUserMenu();
+                            break;
+                    }
                 }
-
-
             }
         } catch (SQLException e) {
             clearConsole();

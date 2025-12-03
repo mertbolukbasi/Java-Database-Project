@@ -12,7 +12,7 @@ import java.util.Comparator;
 public class Senior extends Junior {
 
     @Override
-    public void showUserMenu() {
+    public void showUserMenu() throws SQLException {
         String title = "Welcome " + this.getName() + " " + this.getSurname() + ", " + this.getRole();
         String[] contents = {
                 "",
@@ -439,7 +439,7 @@ public class Senior extends Junior {
     public void undoOperation() {
         // TODO
     }
-    public void sortContacts() {
+    public void sortContacts() throws SQLException {
 
         int choice;
         while(true) {

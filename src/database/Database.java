@@ -11,7 +11,7 @@ public class Database {
     public static final String DATABASE_NAME = "Group16";
     public static final String DATABASE_USER = "myuser";
     public static final String DATABASE_PASSWORD = "1234";
-    public static final String CONNECTION_STRING = "jdbc:mysql://localhost:3306/" + DATABASE_NAME;
+    public static final String CONNECTION_STRING = "jdbc:mysql://localhost:3306/" + DATABASE_NAME + "?useSSL=false&allowPublicKeyRetrieval=true";
     private static Connection connection;
 
     public static Connection openDatabase() throws SQLException {

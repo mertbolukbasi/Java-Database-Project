@@ -10,7 +10,7 @@ import java.util.ArrayList;
 public class Tester extends User {
 
     @Override
-    public void showUserMenu() {
+    public void showUserMenu() throws SQLException {
         while (true) {
             String title = "Welcome " + this.getName() + " " + this.getSurname() + ", " + this.getRole();
             String[] contents = {
@@ -103,23 +103,17 @@ public class Tester extends User {
             int contactCount = contacts.size();
             int currentContactIndex = 1;
 
-            while(loop) {
+            while (loop) {
                 String inputStr;
 
                 label:
-                while(true) {
+                while (true) {
                     DrawMenu.clearConsole();
 
                     Contact currentContact = contacts.get(currentContactIndex - 1);
 
-                    printContactDetails(currentContact);
-
-                    System.out.println();
-                    DrawMenu.printCenter(DrawMenu.YELLOW_BOLD + "< " + currentContactIndex + "/" + contactCount + " >" + DrawMenu.RESET);
-                    System.out.println();
-                    DrawMenu.printCenter("Previous: A, Next: D, Exit: Type 'exit'");
-                    System.out.println();
-                    DrawMenu.printCenter("Your choice: ");
+                    // Normal ekran (mesajsız)
+                    showContactScreen(currentContact, currentContactIndex, contactCount, "");
 
                     inputStr = Input.getStringInput().toLowerCase();
 
@@ -129,11 +123,15 @@ public class Tester extends User {
                                 currentContactIndex--;
                                 break label;
                             } else {
+                                // Listenin başına gelince uyarı
                                 DrawMenu.clearConsole();
-                                printContactDetails(currentContact);
-                                System.out.println("\n" + DrawMenu.RED_BOLD + "You reached the start of the list." + DrawMenu.RESET);
-                                System.out.println("Press Enter to continue...");
-                                Input.getStringInput();
+                                showContactScreen(
+                                        currentContact,
+                                        currentContactIndex,
+                                        contactCount,
+                                        DrawMenu.RED_BOLD + "You reached the start of the list." + DrawMenu.RESET
+                                );
+                                Input.getStringInput(); // Press Enter
                                 break label;
                             }
                         case "d":
@@ -141,22 +139,30 @@ public class Tester extends User {
                                 currentContactIndex++;
                                 break label;
                             } else {
+                                // Listenin sonuna gelince uyarı
                                 DrawMenu.clearConsole();
-                                printContactDetails(currentContact);
-                                System.out.println("\n" + DrawMenu.RED_BOLD + "You reached the end of the list." + DrawMenu.RESET);
-                                System.out.println("Press Enter to continue...");
-                                Input.getStringInput();
+                                showContactScreen(
+                                        currentContact,
+                                        currentContactIndex,
+                                        contactCount,
+                                        DrawMenu.RED_BOLD + "You reached the end of the list." + DrawMenu.RESET
+                                );
+                                Input.getStringInput(); // Press Enter
                                 break label;
                             }
                         case "exit":
                             loop = false;
                             break label;
                         default:
+                            // Geçersiz input uyarısı
                             DrawMenu.clearConsole();
-                            printContactDetails(currentContact);
-                            System.out.println("\n" + DrawMenu.RED_BOLD + "Invalid input. Use A, D or exit." + DrawMenu.RESET);
-                            System.out.println("Press Enter to continue...");
-                            Input.getStringInput();
+                            showContactScreen(
+                                    currentContact,
+                                    currentContactIndex,
+                                    contactCount,
+                                    DrawMenu.RED_BOLD + "Invalid input. Use A, D or exit." + DrawMenu.RESET
+                            );
+                            Input.getStringInput(); // Press Enter
                             break label;
                     }
                 }
@@ -167,8 +173,39 @@ public class Tester extends User {
             System.out.println("Press Enter to return...");
             Input.getStringInput();
         }
+        DrawMenu.clearConsole();
     }
 
+    // Yeni yardımcı fonksiyon: kart + navigasyon + mesaj
+    private void showContactScreen(Contact c, int currentIndex, int totalCount, String message) {
+        String title = c.getFirstName() + " " + c.getLastName();
+        String[] contents = {
+                "",
+                DrawMenu.YELLOW_BOLD + "ID: " + DrawMenu.RESET + c.getContactId(),
+                DrawMenu.YELLOW_BOLD + "Phone: " + DrawMenu.RESET + c.getPhonePrimary(),
+                DrawMenu.YELLOW_BOLD + "Email: " + DrawMenu.RESET + (c.getEmail() != null ? c.getEmail() : "N/A"),
+                DrawMenu.YELLOW_BOLD + "Birth Date: " + DrawMenu.RESET + (c.getBirthDate() != null ? c.getBirthDate() : "N/A"),
+                ""
+        };
+        DrawMenu.printBoxed(title, contents);
+
+        System.out.println();
+        DrawMenu.printCenter("< " + currentIndex + "/" + totalCount + " >");
+        System.out.println();
+        DrawMenu.printCenter("Previous: A, Next: D, Exit: Type 'exit'");
+        System.out.println();
+
+        if (message != null && !message.isEmpty()) {
+            DrawMenu.printCenter(message);
+            System.out.println();
+            DrawMenu.printCenter("Press Enter to continue...");
+            System.out.println();
+        } else {
+            DrawMenu.printCenter("Your choice: ");
+        }
+    }
+
+    // Eski fonksiyon duruyor; search ekranları bunu kullanıyor
     private void printContactDetails(Contact c) {
         String title = c.getFirstName() + " " + c.getLastName();
         String[] contents = {
@@ -183,7 +220,6 @@ public class Tester extends User {
     }
 
     public void searchContact() {
-        //TODO
         java.util.Scanner sc = new java.util.Scanner(System.in);
 
         while (true) {
@@ -206,19 +242,37 @@ public class Tester extends User {
             try {
                 choice = Integer.parseInt(choiceStr);
             } catch (Exception e) {
+                System.out.println(DrawMenu.RED_BOLD + "Invalid input. Please enter a number between 1 and 4." + DrawMenu.RESET);
+                System.out.println("Press Enter to try again...");
+                sc.nextLine();
                 continue;
             }
-
 
             String dbColumn = "";
             String displayName = "";
 
-            if (choice == 1) { dbColumn = "first_name"; displayName = "First Name"; }
-            else if (choice == 2) { dbColumn = "last_name"; displayName = "Last Name"; }
-            else if (choice == 3) { dbColumn = "phone_primary"; displayName = "Phone Number"; }
-            else if (choice == 4) { return; }
-            else { continue; }
-
+            switch (choice) {
+                case 1:
+                    dbColumn = "first_name";
+                    displayName = "First Name";
+                    break;
+                case 2:
+                    dbColumn = "last_name";
+                    displayName = "Last Name";
+                    break;
+                case 3:
+                    dbColumn = "phone_primary";
+                    displayName = "Phone Number";
+                    break;
+                case 4:
+                    DrawMenu.clearConsole();
+                    return;
+                default:
+                    System.out.println(DrawMenu.RED_BOLD + "Invalid input. Please enter a number between 1 and 4." + DrawMenu.RESET);
+                    System.out.println("Press Enter to try again...");
+                    sc.nextLine();
+                    continue;
+            }
 
             System.out.println();
             DrawMenu.printCenter("Enter " + displayName + " to search: ");
@@ -249,7 +303,6 @@ public class Tester extends User {
                 return;
             }
 
-
             if (results.isEmpty()) {
                 System.out.println(DrawMenu.RED_BOLD + "No contacts found matching '" + searchTerm + "'!" + DrawMenu.RESET);
                 System.out.println("Press Enter to try again...");
@@ -274,7 +327,7 @@ public class Tester extends User {
                     printContactDetails(currentContact);
 
                     System.out.println();
-                    DrawMenu.printCenter(DrawMenu.YELLOW_BOLD + "< " + currentIndex + "/" + resultCount + " >" + DrawMenu.RESET);
+                    DrawMenu.printCenter("< " + currentIndex + "/" + resultCount + " >");
                     System.out.println();
                     DrawMenu.printCenter("Previous: A, Next: D, Exit: Type 'exit'");
                     System.out.println();
@@ -288,7 +341,8 @@ public class Tester extends User {
                                 currentIndex--;
                                 break label;
                             } else {
-                                System.out.println(DrawMenu.RED_BOLD + "Start of search results." + DrawMenu.RESET);
+                                System.out.println(DrawMenu.RED_BOLD + "You reached the start of the search results." + DrawMenu.RESET);
+                                System.out.println("Press Enter to continue...");
                                 sc.nextLine();
                                 break label;
                             }
@@ -297,7 +351,8 @@ public class Tester extends User {
                                 currentIndex++;
                                 break label;
                             } else {
-                                System.out.println(DrawMenu.RED_BOLD + "End of search results." + DrawMenu.RESET);
+                                System.out.println(DrawMenu.RED_BOLD + "You reached the end of the search results." + DrawMenu.RESET);
+                                System.out.println("Press Enter to continue...");
                                 sc.nextLine();
                                 break label;
                             }
@@ -306,6 +361,7 @@ public class Tester extends User {
                             break label;
                         default:
                             System.out.println(DrawMenu.RED_BOLD + "Invalid input. Use A, D or exit." + DrawMenu.RESET);
+                            System.out.println("Press Enter to continue...");
                             sc.nextLine();
                             break label;
                     }
@@ -314,30 +370,153 @@ public class Tester extends User {
         }
     }
 
-    public ArrayList<Contact> searchContactsByField(String columnName, String value) throws SQLException {
-        ArrayList<Contact> results = new ArrayList<>();
-
-        String query = "SELECT * FROM contacts WHERE " + columnName + " LIKE '%" + value + "%'";
-
-        Connection dbConnection = Database.openDatabase();
-        Statement statement = dbConnection.createStatement();
-        ResultSet resultSet = statement.executeQuery(query);
-
-        while (resultSet.next()) {
-            Contact c = new Contact();
-            c.setContactId(resultSet.getInt("contact_id"));
-            c.setFirstName(resultSet.getString("first_name"));
-            c.setLastName(resultSet.getString("last_name"));
-            c.setPhonePrimary(resultSet.getString("phone_primary"));
-            c.setEmail(resultSet.getString("email"));
-            c.setBirthDate(resultSet.getDate("birth_date"));
-            results.add(c);
-        }
-        dbConnection.close();
-        return results;
-    }
-
     public void searchBySelectedFields() {
-        //TODO
+        java.util.Scanner sc = new java.util.Scanner(System.in);
+        while (true) {
+            DrawMenu.clearConsole();
+            String title = "Search Contact (Multiple Fields)";
+            String[] info = {
+                    "",
+                    DrawMenu.YELLOW_BOLD + "INSTRUCTIONS:" + DrawMenu.RESET,
+                    "Enter criteria for the fields you want to search.",
+                    "Press " + DrawMenu.YELLOW_BOLD + "[ENTER]" + DrawMenu.RESET + " to skip a field (leave it empty).",
+                    "Type " + DrawMenu.RED_BOLD + "'exit'" + DrawMenu.RESET + " in any field to return menu.",
+                    ""
+            };
+            DrawMenu.printBoxed(title, info);
+            System.out.println();
+
+            System.out.print(DrawMenu.BLUE_BOLD + "First Name: " + DrawMenu.RESET);
+            String fName = Input.getStringInput().trim();
+            if (fName.equalsIgnoreCase("exit")) {
+                DrawMenu.clearConsole();
+                return;
+            }
+
+            System.out.print(DrawMenu.BLUE_BOLD + "Last Name:  " + DrawMenu.RESET);
+            String lName = Input.getStringInput().trim();
+            if (lName.equalsIgnoreCase("exit")) {
+                DrawMenu.clearConsole();
+                return;
+            }
+
+            System.out.print(DrawMenu.BLUE_BOLD + "Phone:      " + DrawMenu.RESET);
+            String phone = Input.getStringInput().trim();
+            if (phone.equalsIgnoreCase("exit")) {
+                DrawMenu.clearConsole();
+                return;
+            }
+
+            System.out.print(DrawMenu.BLUE_BOLD + "Email:      " + DrawMenu.RESET);
+            String email = Input.getStringInput().trim();
+            if (email.equalsIgnoreCase("exit")) {
+                DrawMenu.clearConsole();
+                return;
+            }
+
+            if (fName.isEmpty() && lName.isEmpty() && phone.isEmpty() && email.isEmpty()) {
+                System.out.println(DrawMenu.RED_BOLD + "\nYou didn't enter any criteria!" + DrawMenu.RESET);
+                System.out.println("Press Enter to try again...");
+                sc.nextLine();
+                continue;
+            }
+
+            StringBuilder queryBuilder = new StringBuilder("SELECT * FROM contacts WHERE 1=1");
+
+            if (!fName.isEmpty()) queryBuilder.append(" AND first_name LIKE '%").append(fName).append("%'");
+            if (!lName.isEmpty()) queryBuilder.append(" AND last_name LIKE '%").append(lName).append("%'");
+            if (!phone.isEmpty()) queryBuilder.append(" AND phone_primary LIKE '%").append(phone).append("%'");
+            if (!email.isEmpty()) queryBuilder.append(" AND email LIKE '%").append(email).append("%'");
+
+            ArrayList<Contact> results = new ArrayList<>();
+            try {
+                Connection dbConnection = Database.openDatabase();
+                Statement statement = dbConnection.createStatement();
+                ResultSet resultSet = statement.executeQuery(queryBuilder.toString());
+
+                while (resultSet.next()) {
+                    Contact c = new Contact();
+                    c.setContactId(resultSet.getInt("contact_id"));
+                    c.setFirstName(resultSet.getString("first_name"));
+                    c.setLastName(resultSet.getString("last_name"));
+                    c.setPhonePrimary(resultSet.getString("phone_primary"));
+                    c.setEmail(resultSet.getString("email"));
+                    c.setBirthDate(resultSet.getDate("birth_date"));
+                    results.add(c);
+                }
+                dbConnection.close();
+            } catch (SQLException e) {
+                System.out.println(DrawMenu.RED_BOLD + "Database Error: " + e.getMessage() + DrawMenu.RESET);
+                sc.nextLine();
+                return;
+            }
+
+            DrawMenu.clearConsole();
+            if (results.isEmpty()) {
+                System.out.println(DrawMenu.RED_BOLD + "No contacts found matching your criteria." + DrawMenu.RESET);
+                System.out.println("Press Enter to try again...");
+                sc.nextLine();
+                continue;
+            }
+
+            boolean loop = true;
+            int resultCount = results.size();
+            int currentIndex = 1;
+
+            while (loop) {
+                String inputStr;
+                label:
+                while (true) {
+                    DrawMenu.clearConsole();
+
+                    Contact currentContact = results.get(currentIndex - 1);
+
+                    System.out.println(DrawMenu.GREEN_BOLD + "MULTI-SEARCH RESULTS (" + resultCount + " matches)" + DrawMenu.RESET);
+
+                    printContactDetails(currentContact);
+
+                    System.out.println();
+                    DrawMenu.printCenter("< " + currentIndex + "/" + resultCount + " >");
+                    System.out.println();
+                    DrawMenu.printCenter("Previous: A, Next: D, Exit: Type 'exit'");
+                    System.out.println();
+                    DrawMenu.printCenter("Your choice: ");
+
+                    inputStr = sc.nextLine().toLowerCase().trim();
+
+                    switch (inputStr) {
+                        case "a":
+                            if (currentIndex > 1) {
+                                currentIndex--;
+                                break label;
+                            } else {
+                                System.out.println(DrawMenu.RED_BOLD + "You reached the start of the search results." + DrawMenu.RESET);
+                                System.out.println("Press Enter to continue...");
+                                sc.nextLine();
+                                break label;
+                            }
+                        case "d":
+                            if (currentIndex < resultCount) {
+                                currentIndex++;
+                                break label;
+                            } else {
+                                System.out.println(DrawMenu.RED_BOLD + "You reached the end of the search results." + DrawMenu.RESET);
+                                System.out.println("Press Enter to continue...");
+                                sc.nextLine();
+                                break label;
+                            }
+                        case "exit":
+                            loop = false;
+                            break label;
+                        default:
+                            System.out.println(DrawMenu.RED_BOLD + "Invalid input. Use A, D or exit." + DrawMenu.RESET);
+                            System.out.println("Press Enter to continue...");
+                            sc.nextLine();
+                            break label;
+                    }
+                }
+            }
+        }
     }
 }
+
