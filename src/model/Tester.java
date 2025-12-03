@@ -244,7 +244,7 @@ public class Tester extends User {
             String searchTerm = sc.nextLine().trim();
 
             ArrayList<Contact> results = new ArrayList<>();
-            String query = "SELECT * FROM contacts WHERE " + dbColumn + " LIKE '%" + searchTerm + "%'";
+            String query = "SELECT * FROM contacts WHERE " + dbColumn + " LIKE '%" + searchTerm + "%' COLLATE utf8mb4_turkish_ci";
 
             try {
                 Connection dbConnection = Database.openDatabase();
@@ -389,10 +389,10 @@ public class Tester extends User {
 
             StringBuilder queryBuilder = new StringBuilder("SELECT * FROM contacts WHERE 1=1");
 
-            if (!fName.isEmpty()) queryBuilder.append(" AND first_name LIKE '%").append(fName).append("%'");
-            if (!lName.isEmpty()) queryBuilder.append(" AND last_name LIKE '%").append(lName).append("%'");
-            if (!phone.isEmpty()) queryBuilder.append(" AND phone_primary LIKE '%").append(phone).append("%'");
-            if (!email.isEmpty()) queryBuilder.append(" AND email LIKE '%").append(email).append("%'");
+            if (!fName.isEmpty()) queryBuilder.append(" AND first_name LIKE '%").append(fName).append("%' COLLATE utf8mb4_turkish_ci");
+            if (!lName.isEmpty()) queryBuilder.append(" AND last_name LIKE '%").append(lName).append("%' COLLATE utf8mb4_turkish_ci");
+            if (!phone.isEmpty()) queryBuilder.append(" AND phone_primary LIKE '%").append(phone).append("%' COLLATE utf8mb4_turkish_ci");
+            if (!email.isEmpty()) queryBuilder.append(" AND email LIKE '%").append(email).append("%' COLLATE utf8mb4_turkish_ci");
 
             ArrayList<Contact> results = new ArrayList<>();
             try {
