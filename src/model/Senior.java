@@ -330,7 +330,6 @@ public class Senior extends Junior {
             DrawMenu.clearConsole();
             System.out.println(DrawMenu.RED_BOLD + "Database Error: Contact could not be added." + DrawMenu.RESET);
             showUserMenu();
-            return;
         }
     }
 
@@ -627,19 +626,11 @@ public class Senior extends Junior {
             System.out.println("Press Enter to return...");
             Input.getStringInput();
             showUserMenu();
-            return;
         }
         catch (NumberFormatException e) {
             DrawMenu.clearConsole();
             System.out.println(DrawMenu.RED_BOLD + "Invalid input. Please enter a valid choice.");
             showUserMenu();
-            return;
-        }
-        catch(NullPointerException e) {
-            DrawMenu.clearConsole();
-            System.out.println(DrawMenu.RED_BOLD + "Invalid input. Please enter a valid choice.");
-            showUserMenu();
-            return;
         }
     }
     //sort contact uses this one
