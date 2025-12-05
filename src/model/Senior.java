@@ -98,7 +98,7 @@ public class Senior extends Junior {
         return contact;
     }
 
-    public void addContact() {
+    public void addContact() throws SQLException {
 
         String title = "Add New Contact";
 
@@ -400,7 +400,7 @@ public class Senior extends Junior {
         return true;
     }
 
-    public void deleteContact() {
+    public void deleteContact() throws SQLException {
 
         DrawMenu.clearConsole();
         try {
@@ -489,7 +489,7 @@ public class Senior extends Junior {
     public void undoOperation() {
         // TODO
     }
-    public void sortContacts() {
+    public void sortContacts() throws SQLException {
         DrawMenu.clearConsole();
 
         try {
