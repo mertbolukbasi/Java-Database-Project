@@ -271,7 +271,7 @@ public class Manager extends User {
                 break;
             }
 
-            if (nameInput.matches("^[a-zA-ZçÇğĞıİöÖşŞüÜ]+$")) {
+            if (nameInput.matches("^[a-zA-ZçÇğĞıİöÖşŞüÜ\\s]+$")) {
                 break;
             } else {
                 DrawMenu.clearConsole();
@@ -575,6 +575,15 @@ public class Manager extends User {
                             DrawMenu.printBoxed(titleAdd, contentsAdd);
                             System.out.println();
                             DrawMenu.printCenter("Username: ");
+                        } else if(username.isEmpty()) {
+                            DrawMenu.clearConsole();
+                            System.out.println(DrawMenu.RED_BOLD + "Username cannot be empty. Please try again." + DrawMenu.RESET);
+                            DrawMenu.printBoxed(titleAdd, contentsAdd);
+                            System.out.println();
+                            DrawMenu.printCenter("Username: ");
+                        } else if(username.equals("exit")) {
+                            DrawMenu.clearConsole();
+                            break;
                         } else {
                             DrawMenu.clearConsole();
                             String[] contentsAdd5 = {
@@ -589,8 +598,20 @@ public class Manager extends User {
                             DrawMenu.printBoxed(titleAdd, contentsAdd5);
                             System.out.println();
                             DrawMenu.printCenter("Password: ");
-                            String password = Input.getStringInput();
-
+                            String password;
+                            do {
+                                password = Input.getStringInput();
+                                if(password.length() < 2 || password.length() > 32) {
+                                    DrawMenu.clearConsole();
+                                    System.out.println(DrawMenu.RED_BOLD + "Password must be between 2 and 32 characters." + DrawMenu.RESET);
+                                    DrawMenu.printBoxed(titleAdd, contentsAdd5);
+                                    System.out.println();
+                                    DrawMenu.printCenter("Password: ");
+                                } else if(password.equals("exit")) {
+                                    DrawMenu.clearConsole();
+                                    break;
+                                }
+                            } while(password.length() < 2 || password.length() > 32);
                             DrawMenu.clearConsole();
                             String[] contentsAdd2 = {
                                     "",
@@ -603,8 +624,29 @@ public class Manager extends User {
                             };
                             DrawMenu.printBoxed(titleAdd, contentsAdd2);
                             System.out.println();
-                            DrawMenu.printCenter("Name: ");
-                            String name = Input.getStringInput();
+                            String name;
+                            while (true) {
+                                DrawMenu.printCenter("Name: ");
+                                name = Input.getStringInput();
+
+                                if (name.matches("^[a-zA-ZçÇğĞıİöÖşŞüÜ\\s]+$")) {
+                                    break;
+                                } else if(name.isEmpty()) {
+                                    DrawMenu.clearConsole();
+                                    System.out.println(DrawMenu.RED_BOLD + "Name cannot be empty. Please try again." + DrawMenu.RESET);
+                                    DrawMenu.printBoxed(titleAdd, contentsAdd2);
+                                    System.out.println();
+                                } else {
+                                    DrawMenu.clearConsole();
+                                    System.out.println(DrawMenu.RED_BOLD + "Invalid input. Please enter a valid name." + DrawMenu.RESET);
+                                    DrawMenu.printBoxed(titleAdd, contentsAdd2);
+                                    System.out.println();
+                                }
+                            }
+                            if(name.equals("exit")) {
+                                DrawMenu.clearConsole();
+                                break;
+                            }
 
                             DrawMenu.clearConsole();
                             String[] contentsAdd3 = {
@@ -618,37 +660,77 @@ public class Manager extends User {
                             };
                             DrawMenu.printBoxed(titleAdd, contentsAdd3);
                             System.out.println();
-                            DrawMenu.printCenter("Surname: ");
-                            String surname = Input.getStringInput();
+                            String surname;
+                            while (true) {
+                                DrawMenu.printCenter("Surname: ");
+                                surname = Input.getStringInput();
 
+                                if (surname.matches("^[a-zA-ZçÇğĞıİöÖşŞüÜ]+$")) {
+                                    break;
+                                } else if(surname.isEmpty()) {
+                                    DrawMenu.clearConsole();
+                                    System.out.println(DrawMenu.RED_BOLD + "Surname cannot be empty. Please try again." + DrawMenu.RESET);
+                                    DrawMenu.printBoxed(titleAdd, contentsAdd3);
+                                    System.out.println();
+                                } else {
+                                    DrawMenu.clearConsole();
+                                    System.out.println(DrawMenu.RED_BOLD + "Invalid input. Please enter a valid surname." + DrawMenu.RESET);
+                                    DrawMenu.printBoxed(titleAdd, contentsAdd3);
+                                    System.out.println();
+                                }
+                            }
+                            if(surname.equals("exit")) {
+                                DrawMenu.clearConsole();
+                                break;
+                            }
                             DrawMenu.clearConsole();
-                            String[] contentsAdd4 = {
-                                    "",
-                                    DrawMenu.CYAN_BOLD + "[1] Manager" + DrawMenu.RESET,
-                                    DrawMenu.CYAN_BOLD + "[2] Senior" + DrawMenu.RESET,
-                                    DrawMenu.CYAN_BOLD + "[3] Junior" + DrawMenu.RESET,
-                                    DrawMenu.CYAN_BOLD + "[4] Tester" + DrawMenu.RESET,
-                                    ""
-                            };
-                            DrawMenu.printBoxed(title, contentsAdd4);
-                            System.out.println();
-                            DrawMenu.printCenter("Role: ");
-                            int role = Input.getIntInput();
+
+                            int role;
+                            while(true) {
+                                try {
+                                    String[] contentsAdd4 = {
+                                            "",
+                                            DrawMenu.CYAN_BOLD + "[1] Manager" + DrawMenu.RESET,
+                                            DrawMenu.CYAN_BOLD + "[2] Senior" + DrawMenu.RESET,
+                                            DrawMenu.CYAN_BOLD + "[3] Junior" + DrawMenu.RESET,
+                                            DrawMenu.CYAN_BOLD + "[4] Tester" + DrawMenu.RESET,
+                                            DrawMenu.RED_BOLD + "[5] Return to menu" + DrawMenu.RESET,
+                                            ""
+                                    };
+                                    DrawMenu.printBoxed(title, contentsAdd4);
+                                    System.out.println();
+                                    DrawMenu.printCenter("Role: ");
+                                    role = Input.getIntInput();
+                                    if(role >= 1 && role <= 5) break;
+                                    else {
+                                        DrawMenu.clearConsole();
+                                        System.out.println(DrawMenu.RED_BOLD + "Invalid input. Please try again." + DrawMenu.RESET);
+                                    }
+                                } catch (Exception e) {
+                                    DrawMenu.clearConsole();
+                                    System.out.println(DrawMenu.RED_BOLD + "Invalid input. Please try again." + DrawMenu.RESET);
+                                }
+                            }
+
                             String roleString = "Tester";
                             switch (role) {
                                 case 1:
                                     roleString = "Manager";
                                     break;
                                 case 2:
-                                    roleString = "Senior";
+                                    roleString = "Senior Developer";
                                     break;
                                 case 3:
-                                    roleString = "Junior";
+                                    roleString = "Junior Developer";
                                     break;
                                 case 4:
                                     roleString = "Tester";
                                     break;
+                                case 5:
+                                    break;
+
                             }
+                            if(role == 5) break;
                             User user = new User() {
                                 @Override
                                 public void showUserMenu() {
@@ -661,12 +743,12 @@ public class Manager extends User {
                             user.setSurname(surname);
                             user.setRole(roleString);
                             this.addUser(user);
+                            System.out.println(DrawMenu.GREEN_BOLD + "User added successfully!" + DrawMenu.RESET);
                             break;
                         }
                     }
-                    System.out.println(DrawMenu.GREEN_BOLD + "User added successfully!" + DrawMenu.RESET);
+                    DrawMenu.clearConsole();
                     this.showUserMenu();
-
                 } catch (SQLException e) {
                     DrawMenu.clearConsole();
                     System.out.println(DrawMenu.RED_BOLD + "Database Error: Users could not fetch. Please try again." + DrawMenu.RESET);
