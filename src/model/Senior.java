@@ -155,7 +155,8 @@ public class Senior extends Junior {
                     DrawMenu.clearConsole();
                     showUserMenu();
                 }
-                while(firstName.isBlank() || !firstName.matches("^[a-zA-Z]+$")) {
+                while(!firstName.matches("^[a-zA-Z]+$")) {
+                    DrawMenu.printCenter( DrawMenu.RED + "First name can not contain numbers!" + DrawMenu.RESET);
                     DrawMenu.printCenter("First Name: ");
                     firstName = Input.getStringInput();
                 }
@@ -191,7 +192,8 @@ public class Senior extends Junior {
                     DrawMenu.clearConsole();
                     showUserMenu();
                 }
-                while(lastName.isBlank() || !lastName.matches("^[a-zA-Z]+$")) {
+                while(!lastName.matches("^[a-zA-Z]+$")) {
+                    DrawMenu.printCenter(DrawMenu.RED+ "Last can not contain numbers!" + DrawMenu.RESET);
                     DrawMenu.printCenter("Last Name: ");
                     lastName = Input.getStringInput();
                 }
