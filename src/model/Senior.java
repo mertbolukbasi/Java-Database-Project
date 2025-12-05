@@ -129,12 +129,18 @@ public class Senior extends Junior {
             firstName = Input.getStringInput();
 
             if (!firstName.isEmpty()) {
+                if(firstName.equals("exit")) {
+                    DrawMenu.clearConsole();
+                    showUserMenu();
+                    return;
+                }
                 contact.setFirstName(firstName);
                 break;
             }
-
-            DrawMenu.clearConsole();
-            System.out.println(DrawMenu.RED_BOLD + "First name cannot be empty!" + DrawMenu.RESET);
+            else {
+                DrawMenu.clearConsole();
+                System.out.println(DrawMenu.RED_BOLD + "First name cannot be empty!" + DrawMenu.RESET);
+            }
         }
 
         while (true) {
@@ -156,12 +162,18 @@ public class Senior extends Junior {
             lastName = Input.getStringInput();
 
             if (!lastName.isEmpty()) {
+                if(lastName.equals("exit")) {
+                    DrawMenu.clearConsole();
+                    showUserMenu();
+                    return;
+                }
                 contact.setLastName(lastName);
                 break;
             }
-
-            DrawMenu.clearConsole();
-            System.out.println(DrawMenu.RED_BOLD + "Last name cannot be empty!" + DrawMenu.RESET);
+            else {
+                DrawMenu.clearConsole();
+                System.out.println(DrawMenu.RED_BOLD + "Last name cannot be empty!" + DrawMenu.RESET);
+            }
         }
 
         DrawMenu.clearConsole();
@@ -180,7 +192,14 @@ public class Senior extends Junior {
         System.out.println();
         DrawMenu.printCenter("Nickname (optional): ");
         nickname = Input.getStringInput();
-        contact.setNickname(nickname);
+        if(nickname.equals("exit")) {
+            DrawMenu.clearConsole();
+            showUserMenu();
+            return;
+        }
+        else {
+            contact.setNickname(nickname);
+        }
 
 
         while (true) {
@@ -199,15 +218,23 @@ public class Senior extends Junior {
 
             System.out.println();
             DrawMenu.printCenter("Phone: ");
-            phone = Input.getStringInput();
+            String temp = Input.getStringInput();
+            //phone = Input.getStringInput();
+            if(temp.equals("exit")) {
+                DrawMenu.clearConsole();
+                showUserMenu();
+                return;
+            }
 
-            if (isValidPhone(phone)) {
+            if (isValidPhone(temp)) {
+                phone = temp;
                 contact.setPhonePrimary(phone);
                 break;
             }
-
-            DrawMenu.clearConsole();
-            System.out.println(DrawMenu.RED_BOLD + "Invalid phone format!" + DrawMenu.RESET);
+            else {
+                DrawMenu.clearConsole();
+                System.out.println(DrawMenu.RED_BOLD + "Invalid phone format!" + DrawMenu.RESET);
+            }
         }
 
         while (true) {
@@ -226,15 +253,22 @@ public class Senior extends Junior {
 
             System.out.println();
             DrawMenu.printCenter("Email: ");
-            email = Input.getStringInput();
-
-            if (isValidMail(email)) {
+            String temp = Input.getStringInput();
+            //email = Input.getStringInput();
+            if(temp.equals("exit")) {
+                DrawMenu.clearConsole();
+                showUserMenu();
+                return;
+            }
+            if (isValidMail(temp)) {
+                email = temp;
                 contact.setEmail(email);
                 break;
             }
-
-            DrawMenu.clearConsole();
-            System.out.println(DrawMenu.RED_BOLD + "Invalid email format!" + DrawMenu.RESET);
+            else {
+                DrawMenu.clearConsole();
+                System.out.println(DrawMenu.RED_BOLD + "Invalid email format!" + DrawMenu.RESET);
+            }
         }
 
         while (true) {
@@ -252,18 +286,24 @@ public class Senior extends Junior {
             DrawMenu.printBoxed(title, contentTable6);
 
             System.out.println();
-            DrawMenu.printCenter("Birth Date (YYYY-MM-DD or blank): ");
-            birthDate = Input.getStringInput();
-
-            if (!birthDate.isEmpty()) {
-                if (isValidBirthDay(birthDate)) {
-                    contact.setBirthDate(Date.valueOf(birthDate));
-                    break;
-                }
+            DrawMenu.printCenter("Birth Date (YYYY-MM-DD: ");
+            String temp = Input.getStringInput();
+            //birthDate = Input.getStringInput();
+            if(temp.equals("exit")) {
+                DrawMenu.clearConsole();
+                showUserMenu();
+                return;
+            }
+            if (isValidBirthDay(temp)) {
+                birthDate = temp;
+                contact.setBirthDate(Date.valueOf(birthDate));
+                break;
             }
 
-            DrawMenu.clearConsole();
-            System.out.println(DrawMenu.RED_BOLD + "Invalid date format!" + DrawMenu.RESET);
+            else {
+                DrawMenu.clearConsole();
+                System.out.println(DrawMenu.RED_BOLD + "Invalid date format! or You can not leave here Empty!" + DrawMenu.RESET);
+            }
         }
 
         try {
@@ -282,19 +322,23 @@ public class Senior extends Junior {
 
             ps.executeUpdate();
             dbConnection.close();
+            System.out.println(DrawMenu.GREEN_BOLD + "Contact successfully added!" + DrawMenu.RESET);
+            showUserMenu();
         }
 
         catch (SQLException e) {
             DrawMenu.clearConsole();
             System.out.println(DrawMenu.RED_BOLD + "Database Error: Contact could not be added." + DrawMenu.RESET);
             showUserMenu();
-            return;
         }
     }
 
     public static boolean isValidBirthDay(String date) {
 
         date = date.replaceAll("\\s+", "");
+        if (date.isEmpty()) {
+            return false;
+        }
         if(date.length() < 10)
             return false;
         if((date.charAt(4) != '-') || (date.charAt(7) != '-'))
@@ -315,7 +359,7 @@ public class Senior extends Junior {
 
         int atIndex = email.indexOf('@');
 
-        if(atIndex == 0)
+        if(atIndex <= 0)
             return false;
         if(email.indexOf('@', atIndex + 1) != -1)
             return false;
@@ -334,6 +378,7 @@ public class Senior extends Junior {
 
         return true;
     }
+    //format 05332100598
     public static boolean isValidPhone(String phone) {
         if(phone.isEmpty())
             return false;
@@ -398,8 +443,6 @@ public class Senior extends Junior {
             DrawMenu.printCenter("Your choice: ");
             String confirm;
             while(true) {
-
-                DrawMenu.printCenter("Are you sure you want to delete " + contact.getFirstName() + " " + contact.getLastName() + "? (y/n): ");
                 confirm = Input.getStringInput().toLowerCase();
                 if (confirm.equals("y") || confirm.equals("n")) {
                     break;
@@ -430,9 +473,15 @@ public class Senior extends Junior {
                 System.out.println(DrawMenu.GREEN_BOLD + "Contact deleted successfully!" + DrawMenu.RESET);
                 showUserMenu();
             }
-        } catch (Exception e) {
+        }
+        catch (SQLException e) {
             DrawMenu.clearConsole();
-            System.out.println(DrawMenu.RED_BOLD + "Database Error");
+            System.out.println(DrawMenu.RED_BOLD + "Database Error" + DrawMenu.RESET);
+            showUserMenu();
+        }
+        catch (NumberFormatException e) {
+            DrawMenu.clearConsole();
+            System.out.println(DrawMenu.RED_BOLD + "Invalid input. Please try again." + DrawMenu.RESET);
             showUserMenu();
         }
     }
@@ -440,73 +489,151 @@ public class Senior extends Junior {
         // TODO
     }
     public void sortContacts() throws SQLException {
-
-        int choice;
-        while(true) {
-            DrawMenu.clearConsole();
-            String[] contents = {
-                    "",
-                    DrawMenu.YELLOW_BOLD + "[1]" + DrawMenu.RESET + " Sort by First Name (A-Z)",
-                    DrawMenu.YELLOW_BOLD + "[2]" + DrawMenu.RESET + " Sort by First Name (Z-A)",
-                    DrawMenu.YELLOW_BOLD + "[3]" + DrawMenu.RESET + " Sort by Last Name (A-Z)",
-                    DrawMenu.YELLOW_BOLD + "[4]" + DrawMenu.RESET + " Sort by Last Name (Z-A)",
-                    DrawMenu.YELLOW_BOLD + "[5]" + DrawMenu.RESET + " Sort by Created Date (Newest First)",
-                    DrawMenu.YELLOW_BOLD + "[6]" + DrawMenu.RESET + " Sort by Created Date (Oldest First)",
-                    ""
-            };
-            DrawMenu.printBoxed("Sort Contacts", contents);
-            System.out.println();
-            DrawMenu.printCenter("Your choice: ");
-            choice = Input.getIntInput();
-            if(choice < 1 || choice > 6) {
-                DrawMenu.clearConsole();
-                System.out.println("Invalid choice. Please enter a valid choice.");
-            }
-            else {
-                break;
-            }
-        }
-
-        ArrayList<Contact> list = getAllContacts();
-
-        switch(choice) {
-            case 1:
-                list.sort(Comparator.comparing(Contact::getFirstName));
-                break;
-            case 2:
-                list.sort(Comparator.comparing(Contact::getFirstName).reversed());
-                break;
-            case 3:
-                list.sort(Comparator.comparing(Contact::getLastName));
-                break;
-            case 4:
-                list.sort(Comparator.comparing(Contact::getLastName).reversed());
-                break;
-            case 5:
-                list.sort(Comparator.comparing(Contact::getCreatedAt).reversed());
-                break;
-            case 6:
-                list.sort(Comparator.comparing(Contact::getCreatedAt));
-                break;
-        }
         DrawMenu.clearConsole();
-        for (Contact c : list) {
-            printContact(c);
-            System.out.println();
-        }
-        System.out.println();
-        DrawMenu.printCenter("Press 1 to go user menu: ");
-        while(true) {
-            String intput = Input.getStringInput();
-            if (intput.equals("1")) {
+
+        try {
+            ArrayList<Contact> contacts = getAllContacts();
+            int choice;
+            String str;
+            while(true) {
                 DrawMenu.clearConsole();
-                showUserMenu();
-                break;
-            } else {
-                System.out.println("Invalid input. Please try again.");
+                String[] contents = {
+                        "",
+                        DrawMenu.YELLOW_BOLD + "[1]" + DrawMenu.RESET + " Sort by First Name (A-Z)",
+                        DrawMenu.YELLOW_BOLD + "[2]" + DrawMenu.RESET + " Sort by First Name (Z-A)",
+                        DrawMenu.YELLOW_BOLD + "[3]" + DrawMenu.RESET + " Sort by Last Name (A-Z)",
+                        DrawMenu.YELLOW_BOLD + "[4]" + DrawMenu.RESET + " Sort by Last Name (Z-A)",
+                        DrawMenu.YELLOW_BOLD + "[5]" + DrawMenu.RESET + " Sort by Created Date (Newest First)",
+                        DrawMenu.YELLOW_BOLD + "[6]" + DrawMenu.RESET + " Sort by Created Date (Oldest First)",
+                        ""
+                };
+                DrawMenu.printBoxed("Sort Contacts", contents);
+                System.out.println();
+                DrawMenu.printCenter("Your choice: ");
+                //choice = Input.getIntInput();   hata olmaz ise sil
+                str = Input.getStringInput().toLowerCase();
+                if(str.equals("exit")) {
+                    DrawMenu.clearConsole();
+                    showUserMenu();
+                    return;
+                }
+                choice = Integer.parseInt(str);
+                if(choice < 1 || choice > 6) {
+                    DrawMenu.clearConsole();
+                    System.out.println("Invalid choice. Please enter a valid choice.");
+                }
+                else {
+                    break;
+                }
             }
+            switch(choice) {
+                case 1:
+                    contacts.sort(Comparator.comparing(Contact::getFirstName));
+                    break;
+                case 2:
+                    contacts.sort(Comparator.comparing(Contact::getFirstName).reversed());
+                    break;
+                case 3:
+                    contacts.sort(Comparator.comparing(Contact::getLastName));
+                    break;
+                case 4:
+                    contacts.sort(Comparator.comparing(Contact::getLastName).reversed());
+                    break;
+                case 5:
+                    contacts.sort(Comparator.comparing(Contact::getCreatedAt).reversed());
+                    break;
+                case 6:
+                    contacts.sort(Comparator.comparing(Contact::getCreatedAt));
+                    break;
+            }
+
+            boolean loop = true;
+            int contactCount = contacts.size();
+            int currentIndex = 1;
+
+            while (loop) {
+
+                String inputStr;
+
+                label:
+                while (true) {
+                    DrawMenu.clearConsole();
+
+                    Contact currentContact = contacts.get(currentIndex - 1);
+                    printContact(currentContact);
+
+                    System.out.println();
+                    DrawMenu.printCenter(DrawMenu.YELLOW_BOLD + "< " + currentIndex + "/" + contactCount + " >" + DrawMenu.RESET);
+                    System.out.println();
+                    DrawMenu.printCenter("Previous: A, Next: D, Exit: 'exit'");
+                    System.out.println();
+                    DrawMenu.printCenter("Your choice: ");
+
+                    inputStr = Input.getStringInput().toLowerCase();
+
+                    switch (inputStr) {
+                        case "a":
+                            if (currentIndex > 1) {
+                                currentIndex--;
+                                break label;
+                            }
+                            else {
+                                DrawMenu.clearConsole();
+                                printContact(currentContact);
+                                System.out.println("\n" + DrawMenu.RED_BOLD + "You reached the start of the list." + DrawMenu.RESET);
+                                System.out.println("Press Enter to continue...");
+                                Input.getStringInput();
+                                break label;
+                            }
+
+                        case "d":
+                            if (currentIndex < contactCount) {
+                                currentIndex++;
+                                break label;
+                            }
+                            else {
+                                DrawMenu.clearConsole();
+                                printContact(currentContact);
+                                System.out.println("\n" + DrawMenu.RED_BOLD + "You reached the end of the list." + DrawMenu.RESET);
+                                System.out.println("Press Enter to continue...");
+                                Input.getStringInput();
+                                break label;
+                            }
+
+                        case "exit":
+                            loop = false;
+                            break label;
+
+                        default:
+                            DrawMenu.clearConsole();
+                            printContact(currentContact);
+                            System.out.println("\n" + DrawMenu.RED_BOLD + "Invalid input. Use A, D or exit." + DrawMenu.RESET);
+                            System.out.println("Press Enter to continue...");
+                            Input.getStringInput();
+                            break label;
+                    }
+                }
+                if (!loop) {
+                    DrawMenu.clearConsole();
+                    showUserMenu();
+                    return;
+                }
+            }
+        }
+        catch (SQLException e) {
+            DrawMenu.clearConsole();
+            System.out.println(DrawMenu.RED_BOLD + "Database Error: Contacts could not be fetched." + DrawMenu.RESET);
+            System.out.println("Press Enter to return...");
+            Input.getStringInput();
+            showUserMenu();
+        }
+        catch (NumberFormatException e) {
+            DrawMenu.clearConsole();
+            System.out.println(DrawMenu.RED_BOLD + "Invalid input. Please enter a valid choice.");
+            showUserMenu();
         }
     }
+    //sort contact uses this one
     private void printContact(Contact c) {
         String title = c.getFirstName() + " " + c.getLastName();
 
@@ -521,7 +648,6 @@ public class Senior extends Junior {
                 DrawMenu.CYAN_BOLD + "Created At: " + DrawMenu.RESET + c.getCreatedAt(),
                 DrawMenu.CYAN_BOLD + "Updated At: " + DrawMenu.RESET + c.getUpdatedAt()
         };
-
         DrawMenu.printBoxed(title, content);
     }
 }
