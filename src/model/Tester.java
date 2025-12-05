@@ -175,6 +175,8 @@ public class Tester extends User {
                             }
                         case "exit":
                             loop = false;
+                            DrawMenu.clearConsole();
+                            this.showUserMenu();
                             break label;
                         default:
                             DrawMenu.clearConsole();
