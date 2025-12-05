@@ -16,8 +16,12 @@ public abstract class User {
 
     public abstract void showUserMenu() throws SQLException;
 
+    /**
+     * Handles the password change process interactively.
+     * Checks the current password, enforces length rules, and saves the update to the database.
+     * @author Oğuzhan Aydın
+     */
     public void changePassword() {
-        //TODO
         utils.DrawMenu.clearConsole();
         String[] header = {
                 "",
@@ -127,8 +131,11 @@ public abstract class User {
         utils.DrawMenu.clearConsole();
     }
 
+    /**
+     * Logs out the user with a see you message.
+     * @author Oğuzhan Aydın
+     */
     public void logout() {
-        //TODO
         utils.DrawMenu.clearConsole();
 
         System.out.println("\n" + utils.DrawMenu.YELLOW_BOLD + "Logging out..." + utils.DrawMenu.RESET);
