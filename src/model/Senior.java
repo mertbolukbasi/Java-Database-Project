@@ -191,6 +191,10 @@ public class Senior extends Junior {
                     DrawMenu.clearConsole();
                     showUserMenu();
                 }
+                while(lastName.isBlank() || !lastName.matches("^[a-zA-Z]+$")) {
+                    DrawMenu.printCenter("Last Name: ");
+                    lastName = Input.getStringInput();
+                }
                 contact.setLastName(lastName);
                 break;
             }
