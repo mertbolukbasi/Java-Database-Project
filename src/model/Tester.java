@@ -95,6 +95,7 @@ public class Tester extends User {
             c.setContactId(resultSet.getInt("contact_id"));
             c.setFirstName(resultSet.getString("first_name"));
             c.setLastName(resultSet.getString("last_name"));
+            c.setNickname(resultSet.getString("nickname"));
             c.setPhonePrimary(resultSet.getString("phone_primary"));
             c.setEmail(resultSet.getString("email"));
             c.setBirthDate(resultSet.getDate("birth_date"));
@@ -204,6 +205,7 @@ public class Tester extends User {
         String[] contents = {
                 "",
                 DrawMenu.YELLOW_BOLD + "ID: " + DrawMenu.RESET + c.getContactId(),
+                DrawMenu.YELLOW_BOLD + "Nickname: " + DrawMenu.RESET + (c.getNickname() != null ? c.getNickname() : "N/A"),
                 DrawMenu.YELLOW_BOLD + "Phone: " + DrawMenu.RESET + c.getPhonePrimary(),
                 DrawMenu.YELLOW_BOLD + "Email: " + DrawMenu.RESET + (c.getEmail() != null ? c.getEmail() : "N/A"),
                 DrawMenu.YELLOW_BOLD + "Birth Date: " + DrawMenu.RESET + (c.getBirthDate() != null ? c.getBirthDate() : "N/A"),
@@ -220,7 +222,6 @@ public class Tester extends User {
      * @author Oğuzhan Aydın
      */
     public void searchContact() {
-        java.util.Scanner sc = new java.util.Scanner(System.in);
 
         while (true) {
             DrawMenu.clearConsole();
@@ -237,14 +238,15 @@ public class Tester extends User {
             System.out.println();
             DrawMenu.printCenter("Select a field: ");
 
-            String choiceStr = sc.nextLine().trim();
+            String choiceStr = Input.getStringInput();
+
             int choice;
             try {
                 choice = Integer.parseInt(choiceStr);
             } catch (Exception e) {
                 System.out.println(DrawMenu.RED_BOLD + "Invalid input. Please enter a number between 1 and 4." + DrawMenu.RESET);
                 System.out.println("Press Enter to try again...");
-                sc.nextLine();
+                Input.getStringInput();
                 continue;
             }
 
@@ -270,14 +272,14 @@ public class Tester extends User {
                 default:
                     System.out.println(DrawMenu.RED_BOLD + "Invalid input. Please enter a number between 1 and 4." + DrawMenu.RESET);
                     System.out.println("Press Enter to try again...");
-                    sc.nextLine();
+                    Input.getStringInput();
                     continue;
             }
 
 
             System.out.println();
             DrawMenu.printCenter("Enter " + displayName + " to search: ");
-            String searchTerm = sc.nextLine().trim();
+            String searchTerm = Input.getStringInput();
 
             ArrayList<Contact> results = new ArrayList<>();
             String query = "SELECT * FROM contacts WHERE " + dbColumn + " LIKE '%" + searchTerm + "%' COLLATE utf8mb4_turkish_ci";
@@ -292,6 +294,7 @@ public class Tester extends User {
                     c.setContactId(resultSet.getInt("contact_id"));
                     c.setFirstName(resultSet.getString("first_name"));
                     c.setLastName(resultSet.getString("last_name"));
+                    c.setNickname(resultSet.getString("nickname"));
                     c.setPhonePrimary(resultSet.getString("phone_primary"));
                     c.setEmail(resultSet.getString("email"));
                     c.setBirthDate(resultSet.getDate("birth_date"));
@@ -302,7 +305,7 @@ public class Tester extends User {
                 dbConnection.close();
             } catch (SQLException e) {
                 System.out.println(DrawMenu.RED_BOLD + "Error: " + e.getMessage() + DrawMenu.RESET);
-                sc.nextLine();
+                Input.getStringInput();
                 return;
             }
 
@@ -310,7 +313,7 @@ public class Tester extends User {
             if (results.isEmpty()) {
                 System.out.println(DrawMenu.RED_BOLD + "No contacts found matching '" + searchTerm + "'!" + DrawMenu.RESET);
                 System.out.println("Press Enter to try again...");
-                sc.nextLine();
+                Input.getStringInput();
                 continue;
             }
 
@@ -337,7 +340,7 @@ public class Tester extends User {
                     System.out.println();
                     DrawMenu.printCenter("Your choice: ");
 
-                    inputStr = sc.nextLine().toLowerCase().trim();
+                    inputStr = Input.getStringInput().toLowerCase();
 
                     switch (inputStr) {
                         case "a":
@@ -347,7 +350,7 @@ public class Tester extends User {
                             } else {
                                 System.out.println(DrawMenu.RED_BOLD + "You reached the start of the search results." + DrawMenu.RESET);
                                 System.out.println("Press Enter to continue...");
-                                sc.nextLine();
+                                Input.getStringInput();
                                 break label;
                             }
                         case "d":
@@ -357,7 +360,7 @@ public class Tester extends User {
                             } else {
                                 System.out.println(DrawMenu.RED_BOLD + "You reached the end of the search results." + DrawMenu.RESET);
                                 System.out.println("Press Enter to continue...");
-                                sc.nextLine();
+                                Input.getStringInput();
                                 break label;
                             }
                         case "exit":
@@ -366,7 +369,7 @@ public class Tester extends User {
                         default:
                             System.out.println(DrawMenu.RED_BOLD + "Invalid input. Use A, D or exit." + DrawMenu.RESET);
                             System.out.println("Press Enter to continue...");
-                            sc.nextLine();
+                            Input.getStringInput();
                             break label;
                     }
                 }
@@ -380,7 +383,7 @@ public class Tester extends User {
      * @author Oğuzhan Aydın
      */
     public void searchBySelectedFields() {
-        java.util.Scanner sc = new java.util.Scanner(System.in);
+
         while (true) {
             DrawMenu.clearConsole();
             String title = "Search Contact (Multiple Fields)";
@@ -396,28 +399,28 @@ public class Tester extends User {
             System.out.println();
 
             System.out.print(DrawMenu.BLUE_BOLD + "First Name: " + DrawMenu.RESET);
-            String fName = Input.getStringInput().trim();
+            String fName = Input.getStringInput();
             if (fName.equalsIgnoreCase("exit")) {
                 DrawMenu.clearConsole();
                 return;
             }
 
             System.out.print(DrawMenu.BLUE_BOLD + "Last Name:  " + DrawMenu.RESET);
-            String lName = Input.getStringInput().trim();
+            String lName = Input.getStringInput();
             if (lName.equalsIgnoreCase("exit")) {
                 DrawMenu.clearConsole();
                 return;
             }
 
             System.out.print(DrawMenu.BLUE_BOLD + "Phone:      " + DrawMenu.RESET);
-            String phone = Input.getStringInput().trim();
+            String phone = Input.getStringInput();
             if (phone.equalsIgnoreCase("exit")) {
                 DrawMenu.clearConsole();
                 return;
             }
 
             System.out.print(DrawMenu.BLUE_BOLD + "Email:      " + DrawMenu.RESET);
-            String email = Input.getStringInput().trim();
+            String email = Input.getStringInput();
             if (email.equalsIgnoreCase("exit")) {
                 DrawMenu.clearConsole();
                 return;
@@ -426,7 +429,7 @@ public class Tester extends User {
             if (fName.isEmpty() && lName.isEmpty() && phone.isEmpty() && email.isEmpty()) {
                 System.out.println(DrawMenu.RED_BOLD + "\nYou didn't enter any criteria!" + DrawMenu.RESET);
                 System.out.println("Press Enter to try again...");
-                sc.nextLine();
+                Input.getStringInput();
                 continue;
             }
 
@@ -448,6 +451,7 @@ public class Tester extends User {
                     c.setContactId(resultSet.getInt("contact_id"));
                     c.setFirstName(resultSet.getString("first_name"));
                     c.setLastName(resultSet.getString("last_name"));
+                    c.setNickname(resultSet.getString("nickname"));
                     c.setPhonePrimary(resultSet.getString("phone_primary"));
                     c.setEmail(resultSet.getString("email"));
                     c.setBirthDate(resultSet.getDate("birth_date"));
@@ -458,7 +462,7 @@ public class Tester extends User {
                 dbConnection.close();
             } catch (SQLException e) {
                 System.out.println(DrawMenu.RED_BOLD + "Database Error: " + e.getMessage() + DrawMenu.RESET);
-                sc.nextLine();
+                Input.getStringInput();
                 return;
             }
 
@@ -466,7 +470,7 @@ public class Tester extends User {
             if (results.isEmpty()) {
                 System.out.println(DrawMenu.RED_BOLD + "No contacts found matching your criteria." + DrawMenu.RESET);
                 System.out.println("Press Enter to try again...");
-                sc.nextLine();
+                Input.getStringInput();
                 continue;
             }
 
@@ -493,7 +497,7 @@ public class Tester extends User {
                     System.out.println();
                     DrawMenu.printCenter("Your choice: ");
 
-                    inputStr = sc.nextLine().toLowerCase().trim();
+                    inputStr = Input.getStringInput().toLowerCase();
 
                     switch (inputStr) {
                         case "a":
@@ -503,7 +507,7 @@ public class Tester extends User {
                             } else {
                                 System.out.println(DrawMenu.RED_BOLD + "You reached the start of the search results." + DrawMenu.RESET);
                                 System.out.println("Press Enter to continue...");
-                                sc.nextLine();
+                                Input.getStringInput();
                                 break label;
                             }
                         case "d":
@@ -513,7 +517,7 @@ public class Tester extends User {
                             } else {
                                 System.out.println(DrawMenu.RED_BOLD + "You reached the end of the search results." + DrawMenu.RESET);
                                 System.out.println("Press Enter to continue...");
-                                sc.nextLine();
+                                Input.getStringInput();
                                 break label;
                             }
                         case "exit":
@@ -522,7 +526,7 @@ public class Tester extends User {
                         default:
                             System.out.println(DrawMenu.RED_BOLD + "Invalid input. Use A, D or exit." + DrawMenu.RESET);
                             System.out.println("Press Enter to continue...");
-                            sc.nextLine();
+                            Input.getStringInput();
                             break label;
                     }
                 }
@@ -536,7 +540,6 @@ public class Tester extends User {
      * @author Oğuzhan Aydın
      */
     public void sortContacts() {
-        java.util.Scanner sc = new java.util.Scanner(System.in);
 
         sortMenuLoop:
         while (true) {
@@ -558,7 +561,7 @@ public class Tester extends User {
             System.out.println();
             DrawMenu.printCenter("Select field to sort by: ");
 
-            String inputStr = sc.nextLine().trim();
+            String inputStr = Input.getStringInput();
 
             int choice;
             try {
@@ -566,7 +569,7 @@ public class Tester extends User {
             } catch (NumberFormatException e) {
                 System.out.println(DrawMenu.RED_BOLD + "Invalid input! Please enter a number." + DrawMenu.RESET);
                 System.out.println("Press Enter to try again...");
-                sc.nextLine();
+                Input.getStringInput();
                 continue;
             }
 
@@ -587,13 +590,14 @@ public class Tester extends User {
                 default:
                     System.out.println(DrawMenu.RED_BOLD + "Invalid selection. Please enter 1-8." + DrawMenu.RESET);
                     System.out.println("Press Enter to try again...");
-                    sc.nextLine();
+                    Input.getStringInput();
                     continue;
             }
 
             String sqlOrder = "";
             String displayOrder = "";
 
+            orderSelectionLoop:
             while (true) {
                 DrawMenu.clearConsole();
                 String[] sortInfo = { "", "Selected Field: " + DrawMenu.YELLOW_BOLD + displaySortName + DrawMenu.RESET, "" };
@@ -601,34 +605,37 @@ public class Tester extends User {
 
                 System.out.println();
                 DrawMenu.printCenter("Order (A: Ascending, D: Descending) or 'exit': ");
-                String orderInput = sc.nextLine().trim().toUpperCase();
-
-                if (orderInput.equals("EXIT")) {
-                    continue sortMenuLoop;
-                }
+                String orderInput = Input.getStringInput().toLowerCase();
 
                 boolean isNumericField = (choice == 1 || choice == 4);
                 boolean isBirthDate = (choice == 7);
                 boolean isSystemDate = (choice == 5 || choice == 6);
 
-                if (orderInput.equals("A")) {
-                    sqlOrder = "ASC";
-                    if (isBirthDate) displayOrder = "Ascending (Oldest -> Youngest)";
-                    else if (isSystemDate) displayOrder = "Ascending (Oldest -> Newest)";
-                    else if (isNumericField) displayOrder = "Ascending (Min -> Max)";
-                    else displayOrder = "Ascending (A -> Z)";
-                    break;
-                } else if (orderInput.equals("D")) {
-                    sqlOrder = "DESC";
-                    if (isBirthDate) displayOrder = "Descending (Youngest -> Oldest)";
-                    else if (isSystemDate) displayOrder = "Descending (Newest -> Oldest)";
-                    else if (isNumericField) displayOrder = "Descending (Max -> Min)";
-                    else displayOrder = "Descending (Z -> A)";
-                    break;
-                } else {
-                    System.out.println(DrawMenu.RED_BOLD + "Invalid input! Please enter A, D or exit." + DrawMenu.RESET);
-                    System.out.println("Press Enter to try again...");
-                    sc.nextLine();
+                switch (orderInput) {
+                    case "exit":
+                        continue sortMenuLoop;
+
+                    case "a":
+                        sqlOrder = "ASC";
+                        if (isBirthDate) displayOrder = "Ascending (Oldest -> Youngest)";
+                        else if (isSystemDate) displayOrder = "Ascending (Oldest -> Newest)";
+                        else if (isNumericField) displayOrder = "Ascending (Min -> Max)";
+                        else displayOrder = "Ascending (A -> Z)";
+                        break orderSelectionLoop;
+
+                    case "d":
+                        sqlOrder = "DESC";
+                        if (isBirthDate) displayOrder = "Descending (Youngest -> Oldest)";
+                        else if (isSystemDate) displayOrder = "Descending (Newest -> Oldest)";
+                        else if (isNumericField) displayOrder = "Descending (Max -> Min)";
+                        else displayOrder = "Descending (Z -> A)";
+                        break orderSelectionLoop;
+
+                    default:
+                        System.out.println(DrawMenu.RED_BOLD + "Invalid input! Please enter A, D or exit." + DrawMenu.RESET);
+                        System.out.println("Press Enter to try again...");
+                        Input.getStringInput();
+                        break;
                 }
             }
 
@@ -645,6 +652,7 @@ public class Tester extends User {
                     c.setContactId(resultSet.getInt("contact_id"));
                     c.setFirstName(resultSet.getString("first_name"));
                     c.setLastName(resultSet.getString("last_name"));
+                    c.setNickname(resultSet.getString("nickname"));
                     c.setPhonePrimary(resultSet.getString("phone_primary"));
                     c.setEmail(resultSet.getString("email"));
                     c.setBirthDate(resultSet.getDate("birth_date"));
@@ -655,14 +663,14 @@ public class Tester extends User {
                 dbConnection.close();
             } catch (SQLException e) {
                 System.out.println(DrawMenu.RED_BOLD + "Database Error: " + e.getMessage() + DrawMenu.RESET);
-                sc.nextLine();
+                Input.getStringInput();
                 return;
             }
 
             if (results.isEmpty()) {
                 System.out.println(DrawMenu.RED_BOLD + "No contacts found to sort!" + DrawMenu.RESET);
                 System.out.println("Press Enter to return...");
-                sc.nextLine();
+                Input.getStringInput();
                 continue;
             }
 
@@ -689,7 +697,7 @@ public class Tester extends User {
                     System.out.println();
                     DrawMenu.printCenter("Your choice: ");
 
-                    navInput = sc.nextLine().toLowerCase().trim();
+                    navInput = Input.getStringInput().toLowerCase();
 
                     switch (navInput) {
                         case "a":
@@ -699,7 +707,7 @@ public class Tester extends User {
                             } else {
                                 System.out.println(DrawMenu.RED_BOLD + "Start of list." + DrawMenu.RESET);
                                 System.out.println("Press Enter to continue...");
-                                sc.nextLine();
+                                Input.getStringInput();
                                 break label;
                             }
                         case "d":
@@ -709,7 +717,7 @@ public class Tester extends User {
                             } else {
                                 System.out.println(DrawMenu.RED_BOLD + "End of list." + DrawMenu.RESET);
                                 System.out.println("Press Enter to continue...");
-                                sc.nextLine();
+                                Input.getStringInput();
                                 break label;
                             }
                         case "exit":
@@ -718,7 +726,7 @@ public class Tester extends User {
                         default:
                             System.out.println(DrawMenu.RED_BOLD + "Invalid input. Use A, D or exit." + DrawMenu.RESET);
                             System.out.println("Press Enter to try again...");
-                            sc.nextLine();
+                            Input.getStringInput();
                             break label;
                     }
                 }
