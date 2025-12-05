@@ -7,9 +7,11 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.time.LocalDate;
 import java.util.Comparator;
+import model.undoOperation;
 
 
 public class Senior extends Junior {
+    private ArrayList<undoOperation> undoStack = new ArrayList<>();
 
     @Override
     public void showUserMenu() throws SQLException {
@@ -36,7 +38,7 @@ public class Senior extends Junior {
             input = Input.getIntInput();
         } catch (Exception e) {
             DrawMenu.clearConsole();
-            System.out.println("Invalid input. Please enter a number between 1 and 10.");
+            System.out.println("Invalid input. Please enter a number between 1 and 10." + DrawMenu.RESET);
             showUserMenu();
         }
         switch (input) {
@@ -69,6 +71,10 @@ public class Senior extends Junior {
                 break;
             case 10:
                 this.logout();
+                break;
+            default:
+                System.out.println("Invalid input. Please enter a number between 1 and 10.");
+                showUserMenu();
                 break;
         }
 
@@ -323,6 +329,9 @@ public class Senior extends Junior {
             ps.executeUpdate();
             dbConnection.close();
             System.out.println(DrawMenu.GREEN_BOLD + "Contact successfully added!" + DrawMenu.RESET);
+
+            undoStack.add(new undoOperation(undoOperation.ActionType.ADD_CONTACT, null, contact));
+
             showUserMenu();
         }
 
@@ -436,9 +445,7 @@ public class Senior extends Junior {
             DrawMenu.printBoxed(titleDelete, contentsDelete2);
             System.out.println();
 
-            DrawMenu.printCenter(
-                    DrawMenu.PURPLE_BOLD + "Are you sure you want to delete " + contact.getFirstName() + " " + contact.getLastName() + "? (y/n)" + DrawMenu.RESET
-            );
+            DrawMenu.printCenter(DrawMenu.PURPLE_BOLD + "Are you sure you want to delete " + contact.getFirstName() + " " + contact.getLastName() + "? (y/n)" + DrawMenu.RESET);
             System.out.println();
             DrawMenu.printCenter("Your choice: ");
             String confirm;
@@ -467,6 +474,9 @@ public class Senior extends Junior {
                 PreparedStatement ps = db.prepareStatement(sql);
                 ps.setInt(1, id);
                 ps.executeUpdate();
+
+                undoStack.add(new undoOperation(undoOperation.ActionType.DELETE_CONTACT, contact, null));
+
                 db.close();
 
                 DrawMenu.clearConsole();
@@ -481,12 +491,77 @@ public class Senior extends Junior {
         }
         catch (NumberFormatException e) {
             DrawMenu.clearConsole();
-            System.out.println(DrawMenu.RED_BOLD + "Invalid input. Please try again." + DrawMenu.RESET);
+            System.out.println(DrawMenu.RED_BOLD + "Invalid id. Please try again." + DrawMenu.RESET);
             showUserMenu();
         }
     }
     public void undoOperation() {
-        // TODO
+        DrawMenu.clearConsole();
+
+        if (undoStack.isEmpty()) {System.out.println(DrawMenu.RED_BOLD + "No operations to undo!" + DrawMenu.RESET);Input.getStringInput();
+            return;
+        }
+
+        undoOperation last = undoStack.remove(undoStack.size() - 1);
+
+        try (Connection db = Database.openDatabase()) {
+
+            switch (last.getType()) {
+
+                case ADD_CONTACT:
+                    // Ekleneni siler
+                    Contact added = (Contact) last.getNewData();
+                    PreparedStatement ps1 = db.prepareStatement("DELETE FROM contacts WHERE contact_id = ?");
+                    ps1.setInt(1, added.getContactId());
+                    ps1.executeUpdate();
+                    System.out.println(DrawMenu.GREEN_BOLD + "Undo successful: Contact addition reverted." + DrawMenu.RESET);
+                    break;
+
+
+                case DELETE_CONTACT:
+                    // Silinen geri eklenir
+                    Contact deleted = (Contact) last.getOldData();
+                    PreparedStatement ps2 = db.prepareStatement(
+                            "INSERT INTO contacts (contact_id, first_name, last_name, nickname, phone_primary, email, birth_date, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
+                    );
+
+                    ps2.setInt(1, deleted.getContactId());
+                    ps2.setString(2, deleted.getFirstName());
+                    ps2.setString(3, deleted.getLastName());
+                    ps2.setString(4, deleted.getNickname());
+                    ps2.setString(5, deleted.getPhonePrimary());
+                    ps2.setString(6, deleted.getEmail());
+                    ps2.setObject(7, deleted.getBirthDate());
+                    ps2.setObject(8, deleted.getCreatedAt());
+                    ps2.setObject(9, deleted.getUpdatedAt());
+                    ps2.executeUpdate();
+                    System.out.println(DrawMenu.GREEN_BOLD + "Undo successful: Contact restored." + DrawMenu.RESET);
+                    break;
+
+
+                case UPDATE_CONTACT:
+                    // Yeni veriyi eski veriyle değiştirme
+                    Contact oldC = (Contact) last.getOldData();
+                    PreparedStatement ps3 = db.prepareStatement(
+                            "UPDATE contacts SET first_name=?, last_name=?, nickname=?, phone_primary=?, email=?, birth_date=? WHERE contact_id=?"
+                    );
+                    ps3.setString(1, oldC.getFirstName());
+                    ps3.setString(2, oldC.getLastName());
+                    ps3.setString(3, oldC.getNickname());
+                    ps3.setString(4, oldC.getPhonePrimary());
+                    ps3.setString(5, oldC.getEmail());
+                    ps3.setObject(6, oldC.getBirthDate());
+                    ps3.setInt(7, oldC.getContactId());
+                    ps3.executeUpdate();
+                    System.out.println(DrawMenu.GREEN_BOLD + "Undo successful: Contact update reverted." + DrawMenu.RESET);
+                    break;
+            }
+
+        } catch (SQLException e) {
+            System.out.println(DrawMenu.RED_BOLD + "Undo failed due to database error." + DrawMenu.RESET);
+        }
+
+        Input.getStringInput();
     }
     public void sortContacts() throws SQLException {
         DrawMenu.clearConsole();
