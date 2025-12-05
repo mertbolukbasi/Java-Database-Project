@@ -279,8 +279,7 @@ public class Junior extends Tester {
 
                             try (ResultSet checkPhoneRs = checkPhonePs.executeQuery()) {
                                 if (checkPhoneRs.next() && checkPhoneRs.getInt(1) > 0) {
-                                    System.out.println(DrawMenu.RED_BOLD +
-                                            "This phone number is already used by another contact. Please enter a different phone number."
+                                    System.out.println(DrawMenu.RED_BOLD + "This phone number is already used by another contact. Please enter a different phone number."
                                             + DrawMenu.RESET);
                                 } else {
                                     phone = newPhone;
@@ -289,25 +288,46 @@ public class Junior extends Tester {
                             }
                         } catch (SQLException e) {
                             System.out.println(DrawMenu.RED_BOLD +
-                                    "Database Error while checking phone uniqueness. Keeping old phone number."
-                                    + DrawMenu.RESET);
+                                    "Database Error while checking phone uniqueness. Keeping old phone number." + DrawMenu.RESET);
                             break;
                         }
                     }
 
                     while (true) {
                         DrawMenu.printCenter("New EMAIL (current: " + safe(email) + "): ");
-                        String newEmail = Input.getStringInput();
-                        if (newEmail.trim().isEmpty()) {
+                        String newEmail = Input.getStringInput().trim();
+
+                        if (newEmail.isEmpty()) {
                             break;
                         }
-                        if (!isValidEmail(newEmail.trim())) {
+
+                        if (!isValidEmail(newEmail)) {
                             System.out.println("Invalid email. Example: user@example.com");
-                        } else {
-                            email = newEmail.trim();
+                            continue;
+                        }
+
+                        String emailCheckSql = "SELECT COUNT(*) FROM contacts WHERE email = ? AND contact_id <> ?";
+
+                        try (PreparedStatement emailCheckPs = conn.prepareStatement(emailCheckSql)) {
+                            emailCheckPs.setString(1, newEmail);
+                            emailCheckPs.setInt(2, id);
+
+                            try (ResultSet emailCheckRs = emailCheckPs.executeQuery()) {
+                                if (emailCheckRs.next() && emailCheckRs.getInt(1) > 0) {
+                                    System.out.println(DrawMenu.RED_BOLD +
+                                            "This email is already used by another contact. Please enter a different email." + DrawMenu.RESET);
+                                } else {
+                                    email = newEmail;
+                                    break;
+                                }
+                            }
+                        } catch (SQLException e) {
+                            System.out.println(DrawMenu.RED_BOLD +
+                                    "Database Error while checking email uniqueness. Keeping old email." + DrawMenu.RESET);
                             break;
                         }
                     }
+
 
                     while (true) {
                         DrawMenu.printCenter("New BIRTH DATE (current: " + safe(birthDate) + ", format YYYY-MM-DD): ");
