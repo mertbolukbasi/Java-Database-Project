@@ -7,12 +7,16 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.time.LocalDate;
 import java.util.Comparator;
-import model.undoOperation;
 
 
 public class Senior extends Junior {
     private ArrayList<undoOperation> undoStack = new ArrayList<>();
 
+    /**
+     *user menu creation
+     *author: Ege Usug
+     * @throws SQLException
+     */
     @Override
     public void showUserMenu() throws SQLException {
         String title = "Welcome " + this.getName() + " " + this.getSurname() + ", " + this.getRole();
@@ -80,6 +84,13 @@ public class Senior extends Junior {
 
     }
 
+    /**
+     *Ege Usug
+     * gets the user from their id
+     * @param contact_id
+     * @return related contact with id
+     * @throws SQLException
+     */
     public Contact getContactById(int contact_id) throws SQLException {
         String query = "SELECT * FROM contacts WHERE contact_id = " + contact_id;
         Connection dbConnection = Database.openDatabase();
@@ -104,6 +115,11 @@ public class Senior extends Junior {
         return contact;
     }
 
+    /**
+     *author: Ege Usug
+     * gets info about contact and adds it to database
+     * @throws SQLException
+     */
     public void addContact() throws SQLException {
 
         String title = "Add New Contact";
@@ -138,7 +154,10 @@ public class Senior extends Junior {
                 if(firstName.equals("exit")) {
                     DrawMenu.clearConsole();
                     showUserMenu();
-                    return;
+                }
+                while(firstName.isBlank() || !firstName.matches("^[a-zA-Z]+$")) {
+                    DrawMenu.printCenter("First Name: ");
+                    firstName = Input.getStringInput();
                 }
                 contact.setFirstName(firstName);
                 break;
@@ -171,7 +190,6 @@ public class Senior extends Junior {
                 if(lastName.equals("exit")) {
                     DrawMenu.clearConsole();
                     showUserMenu();
-                    return;
                 }
                 contact.setLastName(lastName);
                 break;
@@ -201,7 +219,6 @@ public class Senior extends Junior {
         if(nickname.equals("exit")) {
             DrawMenu.clearConsole();
             showUserMenu();
-            return;
         }
         else {
             contact.setNickname(nickname);
@@ -229,7 +246,6 @@ public class Senior extends Junior {
             if(temp.equals("exit")) {
                 DrawMenu.clearConsole();
                 showUserMenu();
-                return;
             }
 
             if (isValidPhone(temp)) {
@@ -264,7 +280,6 @@ public class Senior extends Junior {
             if(temp.equals("exit")) {
                 DrawMenu.clearConsole();
                 showUserMenu();
-                return;
             }
             if (isValidMail(temp)) {
                 email = temp;
@@ -298,7 +313,6 @@ public class Senior extends Junior {
             if(temp.equals("exit")) {
                 DrawMenu.clearConsole();
                 showUserMenu();
-                return;
             }
             if (isValidBirthDay(temp)) {
                 birthDate = temp;
@@ -342,6 +356,12 @@ public class Senior extends Junior {
         }
     }
 
+    /**
+     *Author: Ege Usug
+     * controls if date is in expected format
+     * @param date
+     * @return returns false or true based on the format
+     */
     public static boolean isValidBirthDay(String date) {
 
         date = date.replaceAll("\\s+", "");
@@ -360,6 +380,13 @@ public class Senior extends Junior {
             return false;
         }
     }
+
+    /**
+     *Author: Ege Usug
+     * checks if the email is in expected format
+     * @param email
+     * @return returns false or true based on the format
+     */
     public static boolean isValidMail(String email) {
         if(email.isEmpty())
             return false;
@@ -387,6 +414,13 @@ public class Senior extends Junior {
 
         return true;
     }
+
+    /**
+     *Author: Ege Usug
+     * Checks if the phone is in the expected format
+     * @param phone
+     * @return true or false based on result
+     */
     //format 05332100598
     public static boolean isValidPhone(String phone) {
         if(phone.isEmpty())
@@ -408,6 +442,11 @@ public class Senior extends Junior {
         return true;
     }
 
+    /**
+     *Author: Ege Usug
+     * gets the contact from their id and deletes it from database
+     * @throws SQLException
+     */
     public void deleteContact() throws SQLException {
 
         DrawMenu.clearConsole();
@@ -466,7 +505,6 @@ public class Senior extends Junior {
                 DrawMenu.clearConsole();
                 System.out.println("Deletion cancelled.");
                 showUserMenu();
-                return;
             }
             else {
                 Connection db = Database.openDatabase();
@@ -495,10 +533,16 @@ public class Senior extends Junior {
             showUserMenu();
         }
     }
+
+    /**
+     *Author: Ege Usug
+     * makes undo operation
+     */
     public void undoOperation() {
         DrawMenu.clearConsole();
 
-        if (undoStack.isEmpty()) {System.out.println(DrawMenu.RED_BOLD + "No operations to undo!" + DrawMenu.RESET);Input.getStringInput();
+        if (undoStack.isEmpty()) {
+            System.out.println(DrawMenu.RED_BOLD + "No operations to undo!" + DrawMenu.RESET);Input.getStringInput();
             return;
         }
 
@@ -521,9 +565,7 @@ public class Senior extends Junior {
                 case DELETE_CONTACT:
                     // Silinen geri eklenir
                     Contact deleted = (Contact) last.getOldData();
-                    PreparedStatement ps2 = db.prepareStatement(
-                            "INSERT INTO contacts (contact_id, first_name, last_name, nickname, phone_primary, email, birth_date, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
-                    );
+                    PreparedStatement ps2 = db.prepareStatement("INSERT INTO contacts (contact_id, first_name, last_name, nickname, phone_primary, email, birth_date, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
                     ps2.setInt(1, deleted.getContactId());
                     ps2.setString(2, deleted.getFirstName());
@@ -542,9 +584,8 @@ public class Senior extends Junior {
                 case UPDATE_CONTACT:
                     // Yeni veriyi eski veriyle değiştirme
                     Contact oldC = (Contact) last.getOldData();
-                    PreparedStatement ps3 = db.prepareStatement(
-                            "UPDATE contacts SET first_name=?, last_name=?, nickname=?, phone_primary=?, email=?, birth_date=? WHERE contact_id=?"
-                    );
+                    PreparedStatement ps3 = db.prepareStatement("UPDATE contacts SET first_name=?, last_name=?, nickname=?, phone_primary=?, email=?, birth_date=? WHERE contact_id=?");
+
                     ps3.setString(1, oldC.getFirstName());
                     ps3.setString(2, oldC.getLastName());
                     ps3.setString(3, oldC.getNickname());
@@ -557,12 +598,19 @@ public class Senior extends Junior {
                     break;
             }
 
-        } catch (SQLException e) {
+        }
+        catch (SQLException e) {
             System.out.println(DrawMenu.RED_BOLD + "Undo failed due to database error." + DrawMenu.RESET);
         }
 
         Input.getStringInput();
     }
+
+    /**
+     *Author: Ege Usug
+     * sorts contacts how user wants
+     * @throws SQLException
+     */
     public void sortContacts() throws SQLException {
         DrawMenu.clearConsole();
 
@@ -590,7 +638,6 @@ public class Senior extends Junior {
                 if(str.equals("exit")) {
                     DrawMenu.clearConsole();
                     showUserMenu();
-                    return;
                 }
                 choice = Integer.parseInt(str);
                 if(choice < 1 || choice > 6) {
@@ -708,6 +755,12 @@ public class Senior extends Junior {
             showUserMenu();
         }
     }
+
+    /**
+     *Author: Ege Usug
+     * prints the contact for sort contact
+     * @param c contact object
+     */
     //sort contact uses this one
     private void printContact(Contact c) {
         String title = c.getFirstName() + " " + c.getLastName();
