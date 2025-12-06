@@ -14,6 +14,10 @@ public abstract class User {
     private Date created_at;
     private Date updated_at;
 
+    /**
+     * Classes that inherit User class, should use this abstract function.
+     * @author Mert Bölükbaşı
+     */
     public abstract void showUserMenu() throws SQLException;
 
     /**
@@ -149,66 +153,138 @@ public abstract class User {
         utils.DrawMenu.clearConsole();
     }
 
+    /**
+     * Get user id.
+     * @author Mert Bölükbaşı
+     */
     public int getUserId() {
         return userId;
     }
 
+    /**
+     * @param userId User id
+     * Set user id.
+     * @author Mert Bölükbaşı
+     */
     public void setUserId(int userId) {
         this.userId = userId;
     }
 
+    /**
+     * Get updated date.
+     * @author Mert Bölükbaşı
+     */
     public Date getUpdated_at() {
         return updated_at;
     }
 
+    /**
+     * @param updated_at Updated date
+     * Set updated date.
+     * @author Mert Bölükbaşı
+     */
     public void setUpdated_at(Date updated_at) {
         this.updated_at = updated_at;
     }
 
+    /**
+     * Get created date.
+     * @author Mert Bölükbaşı
+     */
     public Date getCreated_at() {
         return created_at;
     }
 
+    /**
+     * @param created_at Created date
+     * Set created date.
+     * @author Mert Bölükbaşı
+     */
     public void setCreated_at(Date created_at) {
         this.created_at = created_at;
     }
 
+    /**
+     * Get role name.
+     * @author Mert Bölükbaşı
+     */
     public String getRole() {
         return role;
     }
 
+    /**
+     * @param role Role name
+     * Set role name.
+     * @author Mert Bölükbaşı
+     */
     public void setRole(String role) {
         this.role = role;
     }
 
+    /**
+     * Get surname.
+     * @author Mert Bölükbaşı
+     */
     public String getSurname() {
         return surname;
     }
 
+    /**
+     * @param surname Surname
+     * Set surname.
+     * @author Mert Bölükbaşı
+     */
     public void setSurname(String surname) {
         this.surname = surname;
     }
 
+    /**
+     * Get name.
+     * @author Mert Bölükbaşı
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * @param name name
+     * Set name.
+     * @author Mert Bölükbaşı
+     */
     public void setName(String name) {
         this.name = name;
     }
 
+    /**
+     * Get hash password.
+     * @author Mert Bölükbaşı
+     */
     public String getPassword_hash() {
         return password_hash;
     }
 
+    /**
+     * @param password_hash Hash password
+     * Set hash password.
+     * @author Mert Bölükbaşı
+     */
     public void setPassword_hash(String password_hash) {
         this.password_hash = password_hash;
     }
 
+    /**
+     * Get username.
+     * @author Mert Bölükbaşı
+     */
     public String getUsername() {
         return username;
     }
 
+    /**
+     * @param username Username
+     * Set username.
+     * @author Mert Bölükbaşı
+     */
     public void setUsername(String username) {
         this.username = username;
     }

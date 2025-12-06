@@ -7,13 +7,7 @@ import utils.Input;
 import java.sql.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
-/**
- * Represents the Junior Developer role.
- * Inherits all Tester features and adds contact update functionality
- * with extra validation on user inputs.
- *
- * @author Yiğit Emre Ünlüçerçi
- */
+
 public class Junior extends Tester {
 
     /**

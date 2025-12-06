@@ -6,12 +6,7 @@ import utils.Input;
 
 import java.sql.*;
 import java.util.ArrayList;
-/**
- * Represents the Tester role.
- * Provides list, search, and sort functions.
- * This class extends the User class to inherit some user's functions.
- * @author Oğuzhan Aydın
- */
+
 public class Tester extends User {
 
     /**

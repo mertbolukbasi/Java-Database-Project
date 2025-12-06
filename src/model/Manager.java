@@ -14,25 +14,21 @@ import java.util.ArrayList;
 public class Manager extends User {
     private ArrayList<undoOperation> undoStack = new ArrayList<>();
 
+    /**
+     * To return most used name and its count.
+     * @author Mert Bölükbaşı
+     */
     private static class MostUsedName {
         public String name = "";
         public int count = 0;
     }
 
-    private ArrayList<Integer> getAllUserId() throws SQLException {
-        ArrayList<Integer> idList = new ArrayList<>();
-        String query = "SELECT user_id FROM users";
-
-        Connection dbConnection = Database.openDatabase();
-        Statement statement = dbConnection.createStatement();
-        ResultSet resultSet = statement.executeQuery(query);
-        while(resultSet.next()) {
-            idList.add(resultSet.getInt("user_id"));
-        }
-        dbConnection.close();
-        return idList;
-    }
-
+    /**
+     * @param user_id User id
+     * Fetch user with user id from database.
+     * @throws SQLException if a database access error occurs.
+     * @author Mert Bölükbaşı
+     */
     private User getUserById(int user_id) throws SQLException {
         String query = "SELECT * FROM users WHERE user_id = " + user_id;
         Connection dbConnection = Database.openDatabase();
@@ -64,7 +60,12 @@ public class Manager extends User {
         return null;
     }
 
-    public ArrayList<User> listAllUsers() throws SQLException {
+    /**
+     * Fetch all users from database.
+     * @throws SQLException if a database access error occurs.
+     * @author Mert Bölükbaşı
+     */
+    private ArrayList<User> listAllUsers() throws SQLException {
         ArrayList<User> list = new ArrayList<>();
         String query = "SELECT * FROM users";
         Connection dbConnection = Database.openDatabase();
@@ -100,7 +101,14 @@ public class Manager extends User {
         return list;
     }
 
-    public void updateUser(int user_id, User user) throws SQLException {
+    /**
+     * @param user_id User id
+     * @param user User object
+     * Update user fields in database.
+     * @throws SQLException if a database access error occurs.
+     * @author Mert Bölükbaşı
+     */
+    private void updateUser(int user_id, User user) throws SQLException {
         String sql = "UPDATE users SET username = ?, password_hash = ?, name = ?, surname = ?, role = ? WHERE user_id = ?";
         Connection dbConnection = Database.openDatabase();
 
@@ -116,7 +124,13 @@ public class Manager extends User {
         dbConnection.close();
     }
 
-    public User addUser(User user) throws SQLException {
+    /**
+     * @param user User object
+     * Add new user to database.
+     * @throws SQLException if a database access error occurs.
+     * @author Mert Bölükbaşı
+     */
+    private void addUser(User user) throws SQLException {
             String query = "INSERT INTO users (name, surname, username, password_hash, role) VALUES (?, ?, ?, ?, ?)";
             Connection dbConnection = Database.openDatabase();
             PreparedStatement preparedStatement = dbConnection.prepareStatement(query);
@@ -129,10 +143,15 @@ public class Manager extends User {
             preparedStatement.executeUpdate();
             dbConnection.close();
         undoStack.add(new undoOperation(undoOperation.ActionType.ADD_USER, null, user));
-        return user;
     }
 
-    public boolean checkExistingUser(String username) throws SQLException {
+    /**
+     * @param username User username
+     * Controls user exists or not with username.
+     * @throws SQLException if a database access error occurs.
+     * @author Mert Bölükbaşı
+     */
+    private boolean checkExistingUser(String username) throws SQLException {
         String query = "SELECT username FROM users WHERE username = ?";
         Connection connection = Database.openDatabase();
         PreparedStatement checkStmt = connection.prepareStatement(query);
@@ -147,7 +166,13 @@ public class Manager extends User {
         return false;
     }
 
-    public boolean checkExistingUser(int id) throws SQLException {
+    /**
+     * @param id User id
+     * Controls user exists or not with user id.
+     * @throws SQLException if a database access error occurs.
+     * @author Mert Bölükbaşı
+     */
+    private boolean checkExistingUser(int id) throws SQLException {
         String query = "SELECT user_id FROM users WHERE user_id = ?";
         Connection connection = Database.openDatabase();
         PreparedStatement checkStmt = connection.prepareStatement(query);
@@ -163,7 +188,13 @@ public class Manager extends User {
         return false;
     }
 
-    public boolean getUserByUsername(String username) throws SQLException {
+    /**
+     * @param username User username
+     * Fetch user from database with username.
+     * @throws SQLException if a database access error occurs.
+     * @author Mert Bölükbaşı
+     */
+    private boolean getUserByUsername(String username) throws SQLException {
         String query = "SELECT * FROM users WHERE username = ?";
         Connection connection = Database.openDatabase();
         PreparedStatement preparedStatement = connection.prepareStatement(query);
@@ -177,7 +208,13 @@ public class Manager extends User {
         return false;
     }
 
-    public void deleteUser(int id) throws SQLException {
+    /**
+     * @param id Userid
+     * Delete user from database with user id.
+     * @throws SQLException if a database access error occurs.
+     * @author Mert Bölükbaşı
+     */
+    private void deleteUser(int id) throws SQLException {
         User oldUser = getUserById(id);
 
         String query = "DELETE FROM users WHERE user_id = ?";
@@ -192,7 +229,12 @@ public class Manager extends User {
         connection.close();
     }
 
-    public User updateUserMenu(User user) throws SQLException {
+    /**
+     * Update user menu.
+     * @throws SQLException if a database access error occurs.
+     * @author Mert Bölükbaşı
+     */
+    private User updateUserMenu(User user) throws SQLException {
         String updateTitle = "Update User, " + this.getName() + " " + this.getSurname() + ", " + this.getRole();;
         String usernameInput;
         DrawMenu.clearConsole();
@@ -418,6 +460,11 @@ public class Manager extends User {
         return newUser;
     }
 
+    /**
+     * Calculates total contact from database.
+     * @throws SQLException if a database access error occurs.
+     * @author Mert Bölükbaşı
+     */
     private int totalContact() throws SQLException {
         String query = "SELECT COUNT(*) FROM contacts";
         Connection dbConnection = Database.openDatabase();
@@ -429,6 +476,11 @@ public class Manager extends User {
         return 0;
     }
 
+    /**
+     * Fetch the oldest person from database.
+     * @throws SQLException if a database access error occurs.
+     * @author Mert Bölükbaşı
+     */
     private Contact oldestPerson() throws SQLException {
         String sql = "SELECT * FROM contacts WHERE birth_date IS NOT NULL ORDER BY birth_date ASC LIMIT 1";
         Connection dbConnection = Database.openDatabase();
@@ -450,6 +502,11 @@ public class Manager extends User {
         return contact;
     }
 
+    /**
+     * Fetch the youngest person from database.
+     * @throws SQLException if a database access error occurs.
+     * @author Mert Bölükbaşı
+     */
     private Contact youngestPerson() throws SQLException {
         String sql = "SELECT * FROM contacts WHERE birth_date IS NOT NULL ORDER BY birth_date DESC LIMIT 1";
         Connection dbConnection = Database.openDatabase();
@@ -471,6 +528,11 @@ public class Manager extends User {
         return contact;
     }
 
+    /**
+     * Calculates average age from database.
+     * @throws SQLException if a database access error occurs.
+     * @author Mert Bölükbaşı
+     */
     private double averageAge() throws SQLException {
         String sql = "SELECT AVG(TIMESTAMPDIFF(YEAR, birth_date, CURDATE())) as average_age FROM contacts WHERE birth_date IS NOT NULL";
         Connection dbConnection = Database.openDatabase();
@@ -482,6 +544,11 @@ public class Manager extends User {
         return 0.0;
     }
 
+    /**
+     * Returns most used name and count.
+     * @throws SQLException if a database access error occurs.
+     * @author Mert Bölükbaşı
+     */
     private MostUsedName mostUsedName() throws SQLException {
         String sql = "SELECT first_name, COUNT(*) as count FROM contacts " +
                 "WHERE first_name IS NOT NULL " +
@@ -502,7 +569,12 @@ public class Manager extends User {
         return mostUsedName;
     }
 
-    public int calculateAge(Date birthDate) {
+    /**
+     * @param birthDate User birthdate.
+     * Calculate current age
+     * @author Mert Bölükbaşı
+     */
+    private int calculateAge(Date birthDate) {
         if (birthDate == null) {
             return 0;
         }
@@ -520,7 +592,11 @@ public class Manager extends User {
 
 
 
-    public void showContactStats() {
+    /**
+     * Shows contact statistics menu.
+     * @author Mert Bölükbaşı
+     */
+    private void showContactStats() {
         String titleStat = "Contacts Statistical Info, " + this.getName() + " " + this.getSurname() + ", " + this.getRole();
         DrawMenu.clearConsole();
         while(true) {
@@ -618,7 +694,12 @@ public class Manager extends User {
         showUserMenu();
     }
 
-    public void undoOperation() throws SQLException {
+    /**
+     * Makes undo operation.
+     * @throws SQLException if a database access error occurs.
+     * @author Ege Usuğ
+     */
+    private void undoOperation() throws SQLException {
 
         if (undoStack.isEmpty()) {
             System.out.println("No operation to undo!");
@@ -651,6 +732,12 @@ public class Manager extends User {
         }
     }
 
+    /**
+     * @param u User object
+     * Add new user.
+     * @throws SQLException if a database access error occurs.
+     * @author Ege Usuğ
+     */
     private void restoreUser(User u) throws SQLException {
 
         Connection db = Database.openDatabase();
@@ -670,7 +757,29 @@ public class Manager extends User {
         db.close();
     }
 
+    /**
+     * @param user User object
+     * Prints user list menu and user fields.
+     * @author Mert Bölükbaşı
+     */
+    public void showUserList(User user) {
+        String title = user.getName() + " " + user.getSurname();
+        String[] contents = {
+                DrawMenu.CYAN_BOLD + "id: " + user.getUserId() + DrawMenu.RESET,
+                DrawMenu.CYAN_BOLD + "username: " + user.getUsername() + DrawMenu.RESET,
+                DrawMenu.CYAN_BOLD + "name: " + user.getName() + DrawMenu.RESET,
+                DrawMenu.CYAN_BOLD + "surname: " + user.getSurname() + DrawMenu.RESET,
+                DrawMenu.CYAN_BOLD + "role: " + user.getRole() + DrawMenu.RESET,
+                DrawMenu.CYAN_BOLD + "created_at: " + user.getCreated_at() + DrawMenu.RESET,
+                DrawMenu.CYAN_BOLD + "updated_at: " + user.getUpdated_at() + DrawMenu.RESET
+        };
+        DrawMenu.printBoxed(title, contents);
+    }
 
+    /**
+     * Shows manager menu.
+     * @author Mert Bölükbaşı
+     */
     @Override
     public void showUserMenu() {
         String title = "Welcome " + this.getName() + " " + this.getSurname() + ", " + this.getRole();
@@ -682,7 +791,8 @@ public class Manager extends User {
                 DrawMenu.YELLOW_BOLD + "[4] Update Existing User" + DrawMenu.RESET,
                 DrawMenu.YELLOW_BOLD + "[5] Add New User" + DrawMenu.RESET,
                 DrawMenu.YELLOW_BOLD + "[6] Delete Existing User" + DrawMenu.RESET,
-                DrawMenu.YELLOW_BOLD + "[7] Logout" + DrawMenu.RESET,
+                DrawMenu.YELLOW_BOLD + "[7] Undo Last Operation" + DrawMenu.RESET,
+                DrawMenu.YELLOW_BOLD + "[8] Logout" + DrawMenu.RESET,
                 ""
         };
         DrawMenu.printBoxed(title, contents);
@@ -716,7 +826,7 @@ public class Manager extends User {
                         String inputStr;
                         label:
                         while(true) {
-                            DrawMenu.showUserList(users.get(currentUser - 1));
+                            showUserList(users.get(currentUser - 1));
                             System.out.println();
                             DrawMenu.printCenter("< " + currentUser + "/" + userCount + " >");
                             System.out.println();
@@ -1007,11 +1117,11 @@ public class Manager extends User {
                             user.setSurname(surname);
                             user.setRole(roleString);
                             this.addUser(user);
+                            DrawMenu.clearConsole();
                             System.out.println(DrawMenu.GREEN_BOLD + "User added successfully!" + DrawMenu.RESET);
                             break;
                         }
                     }
-                    DrawMenu.clearConsole();
                     this.showUserMenu();
                 } catch (SQLException e) {
                     DrawMenu.clearConsole();
@@ -1075,8 +1185,16 @@ public class Manager extends User {
                 }
                 this.showUserMenu();
                 break;
-            case 8:
-                this.undoOperation();
+            case 7:
+                while(true) {
+                    try {
+                        this.undoOperation();
+                        break;
+                    } catch (SQLException e) {
+                        DrawMenu.clearConsole();
+                        System.out.println(DrawMenu.RED_BOLD + "Database Error: Undo is not working." + DrawMenu.RESET);
+                    }
+                }
                 showUserMenu();
                 break;
             default:

@@ -12,9 +12,9 @@ public class Senior extends Junior {
     private ArrayList<undoOperation> undoStack = new ArrayList<>();
 
     /**
-     *user menu creation
-     *author: Ege Usug
-     * @throws SQLException
+     * User menu creation
+     * @throws SQLException if a database access error occurs.
+     * @author Ege Usuğ
      */
     @Override
     public void showUserMenu() throws SQLException {
@@ -84,11 +84,11 @@ public class Senior extends Junior {
     }
 
     /**
-     *Ege Usug
-     * gets the user from their id
-     * @param contact_id
+     * Gets the user from their id.
+     * @param contact_id Contact id
      * @return related contact with id
-     * @throws SQLException
+     * @throws SQLException if a database access error occurs.
+     * @author Ege Usuğ
      */
     public Contact getContactById(int contact_id) throws SQLException {
         String query = "SELECT * FROM contacts WHERE contact_id = " + contact_id;
@@ -115,9 +115,9 @@ public class Senior extends Junior {
     }
 
     /**
-     *author: Ege Usug
-     * gets info about contact and adds it to database
-     * @throws SQLException
+     * Gets info about contact and adds it to database.
+     * @throws SQLException if a database access error occurs.
+     * @author Ege Usuğ
      */
     public void addContact() throws SQLException {
 
@@ -390,10 +390,10 @@ public class Senior extends Junior {
     }
 
     /**
-     *Author: Ege Usug
-     * controls if date is in expected format
-     * @param date
+     * Controls if date is in expected format.
+     * @param date Date
      * @return returns false or true based on the format
+     * @author Ege Usuğ
      */
     public static boolean isValidBirthDay(String date) {
 
@@ -419,10 +419,10 @@ public class Senior extends Junior {
     }
 
     /**
-     *Author: Ege Usug
-     * checks if the email is in expected format
-     * @param email
+     * Checks if the email is in expected format.
+     * @param email Email
      * @return returns false or true based on the format
+     * @author Ege Usuğ
      */
     public static boolean isValidMail(String email) {
 
@@ -460,10 +460,10 @@ public class Senior extends Junior {
 
 
     /**
-     *Author: Ege Usug
-     * Checks if the phone is in the expected format
-     * @param phone
+     * Checks if the phone is in the expected format.
+     * @param phone Phone number
      * @return true or false based on result
+     * @author Ege Usuğ
      */
     //format 05332100598
     public static boolean isValidPhone(String phone) {
@@ -487,9 +487,9 @@ public class Senior extends Junior {
     }
 
     /**
-     *Author: Ege Usug
-     * gets the contact from their id and deletes it from database
-     * @throws SQLException
+     * Gets the contact from their id and deletes it from database.
+     * @throws SQLException if a database access error occurs.
+     * @author Ege Usuğ
      */
     public void deleteContact() throws SQLException {
 
@@ -579,8 +579,8 @@ public class Senior extends Junior {
     }
 
     /**
-     *Author: Ege Usug
-     * makes undo operation
+     * Makes undo operation.
+     * @author Ege Usuğ
      */
     public void undoOperation() {
         DrawMenu.clearConsole();

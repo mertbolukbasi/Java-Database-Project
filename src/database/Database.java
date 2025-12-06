@@ -12,17 +12,23 @@ public class Database {
     public static final String DATABASE_USER = "myuser";
     public static final String DATABASE_PASSWORD = "1234";
     public static final String CONNECTION_STRING = "jdbc:mysql://localhost:3306/" + DATABASE_NAME + "?useSSL=false&allowPublicKeyRetrieval=true";
-    private static Connection connection;
 
+    /**
+     * Opens database connection.
+     * @author Mert Bölükbaşı
+     */
     public static Connection openDatabase() throws SQLException {
-        connection = DriverManager.getConnection(CONNECTION_STRING, DATABASE_USER, DATABASE_PASSWORD);
-        return connection;
+        return DriverManager.getConnection(CONNECTION_STRING, DATABASE_USER, DATABASE_PASSWORD);
     }
 
-    public static void closeDatabase() throws SQLException {
-        if(connection != null) connection.close();
-    }
-
+    /**
+     * @param username Username
+     * @param password User password
+     * Checks username and password if matches, login the system.
+     * @return User
+     * @throws SQLException if a database access error occurs.
+     * @author Mert Bölükbaşı
+     */
     public static User login(String username, String password) throws SQLException {
 
         String query = "SELECT * FROM users WHERE username = ? AND password_hash = ?";

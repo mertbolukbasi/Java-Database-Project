@@ -14,11 +14,13 @@ public class DrawMenu {
     public static final String RESET = "\033[0m";
 
     public static final String RED = "\033[0;31m";
+    /*
     public static final String GREEN = "\033[0;32m";
     public static final String YELLOW = "\033[0;33m";
     public static final String BLUE = "\033[0;34m";
     public static final String PURPLE = "\033[0;35m";
     public static final String CYAN = "\033[0;36m";
+     */
     public static final String LIGHT_GRAY = "\033[38;5;250m";
 
     public static final String RED_BOLD = "\033[1;31m";
@@ -27,7 +29,7 @@ public class DrawMenu {
     public static final String BLUE_BOLD = "\033[1;34m";
     public static final String PURPLE_BOLD = "\033[1;35m";
     public static final String CYAN_BOLD = "\033[1;36m";
-    public static final String WHITE_BOLD = "\033[1;37m";
+    // public static final String WHITE_BOLD = "\033[1;37m";
 
     private static final String TOP_LEFT = "┌";
     private static final String TOP_RIGHT = "┐";
@@ -36,11 +38,19 @@ public class DrawMenu {
     private static final String VERTICAL  = "│";
     private static final String HORIZONTAL  = "─";
 
+    /**
+     * Clear console.
+     * @author Mert Bölükbaşı
+     */
     public static void clearConsole(){
         System.out.print("\033[H\033[2J");
         System.out.flush();
     }
 
+    /**
+     * Prints a through a line.
+     * @author Mert Bölükbaşı
+     */
     private static void printRow(String text) {
         String cleanText = text.replaceAll("\033\\[[;\\d]*m", "");
 
@@ -56,6 +66,10 @@ public class DrawMenu {
         System.out.println(VERTICAL);
     }
 
+    /**
+     * Prints a box that contains rows.
+     * @author Mert Bölükbaşı
+     */
     public static void printBoxed(String title, String[] content) {
         System.out.print(TOP_LEFT);
         for (int i = 0; i < WIDTH - 2; i++) System.out.print(HORIZONTAL);
@@ -76,11 +90,19 @@ public class DrawMenu {
         System.out.println(BOTTOM_RIGHT);
     }
 
+    /**
+     * Prints center.
+     * @author Mert Bölükbaşı
+     */
     public static void printCenter(String text) {
         for(int i = 0; i<(WIDTH - text.length())/2; i++) System.out.print(" ");
         System.out.print(text);
     }
 
+    /**
+     * Prints login screen.
+     * @author Mert Bölükbaşı
+     */
     public static void showLoginScreen() {
 
         String username = BLUE_BOLD + "Username" + ":" + RESET + LIGHT_GRAY + ITALIC + " write your username" + RESET;
@@ -183,20 +205,7 @@ public class DrawMenu {
 
     }
 
-    public static void showUserList(User user) {
-        String title = user.getName() + " " + user.getSurname();
-        String[] contents = {
-                CYAN_BOLD + "id: " + user.getUserId() + RESET,
-                CYAN_BOLD + "username: " + user.getUsername() + RESET,
-                CYAN_BOLD + "name: " + user.getName() + RESET,
-                CYAN_BOLD + "surname: " + user.getSurname() + RESET,
-                CYAN_BOLD + "role: " + user.getRole() + RESET,
-                CYAN_BOLD + "created_at: " + user.getCreated_at() + RESET,
-                CYAN_BOLD + "updated_at: " + user.getUpdated_at() + RESET
-        };
 
-        printBoxed(title, contents);
-    }
 
 
 }
