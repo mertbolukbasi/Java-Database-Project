@@ -6,7 +6,6 @@ import utils.Input;
 import java.sql.*;
 import java.util.ArrayList;
 import java.time.LocalDate;
-import java.util.Comparator;
 
 
 public class Senior extends Junior {
@@ -155,7 +154,7 @@ public class Senior extends Junior {
                     DrawMenu.clearConsole();
                     showUserMenu();
                 }
-                while(!firstName.matches("^[a-zA-Z]+$")) {
+                while(!firstName.matches("^[a-zA-ZçÇğĞıİöÖşŞüÜ]+$")) {
                     DrawMenu.printCenter( DrawMenu.RED + "First name can not contain numbers!" + DrawMenu.RESET);
                     DrawMenu.printCenter("First Name: ");
                     firstName = Input.getStringInput();
@@ -192,7 +191,7 @@ public class Senior extends Junior {
                     DrawMenu.clearConsole();
                     showUserMenu();
                 }
-                while(!lastName.matches("^[a-zA-Z]+$")) {
+                while(!lastName.matches("^[a-zA-ZçÇğĞıİöÖşŞüÜ]+$")) {
                     DrawMenu.printCenter(DrawMenu.RED+ "Last can not contain numbers!" + DrawMenu.RESET);
                     DrawMenu.printCenter("Last Name: ");
                     lastName = Input.getStringInput();
@@ -248,13 +247,27 @@ public class Senior extends Junior {
             System.out.println();
             DrawMenu.printCenter("Phone: ");
             String temp = Input.getStringInput();
-            //phone = Input.getStringInput();
             if(temp.equals("exit")) {
                 DrawMenu.clearConsole();
                 showUserMenu();
             }
 
             if (isValidPhone(temp)) {
+                ArrayList<Contact> contacts = getAllContacts();
+                Contact con;
+                String phoneControl;
+
+                for (int i = 0; i < contacts.size(); i++) {
+                    con = contacts.get(i);
+                    phoneControl = con.getPhonePrimary();
+
+                    if (phoneControl.equals(temp)) {
+                        System.out.println(DrawMenu.RED + "This phone is already in use! Enter different phone number!" + DrawMenu.RESET);
+                        temp = Input.getStringInput();
+                    }
+                    else
+                        break;
+                }
                 phone = temp;
                 contact.setPhonePrimary(phone);
                 break;
@@ -288,6 +301,21 @@ public class Senior extends Junior {
                 showUserMenu();
             }
             if (isValidMail(temp)) {
+                ArrayList<Contact> contacts = getAllContacts();
+                Contact con;
+                String mailControl;
+
+                for (int i = 0; i < contacts.size(); i++) {
+                    con = contacts.get(i);
+                    mailControl = con.getPhonePrimary();
+
+                    if (mailControl.equals(temp)) {
+                        System.out.println(DrawMenu.RED + "This mail is already in use! Enter different mail!" + DrawMenu.RESET);
+                        temp = Input.getStringInput();
+                    }
+                    else
+                        break;
+                }
                 email = temp;
                 contact.setEmail(email);
                 break;
@@ -315,7 +343,6 @@ public class Senior extends Junior {
             System.out.println();
             DrawMenu.printCenter("Birth Date (YYYY-MM-DD: ");
             String temp = Input.getStringInput();
-            //birthDate = Input.getStringInput();
             if(temp.equals("exit")) {
                 DrawMenu.clearConsole();
                 showUserMenu();
@@ -370,18 +397,22 @@ public class Senior extends Junior {
      */
     public static boolean isValidBirthDay(String date) {
 
-        date = date.replaceAll("\\s+", "");
         if (date.isEmpty()) {
             return false;
         }
-        if(date.length() < 10)
+        if (!date.matches("^\\d{4}-\\d{2}-\\d{2}$")) {
             return false;
-        if((date.charAt(4) != '-') || (date.charAt(7) != '-'))
-            return false;
+        }
+
         try {
-            LocalDate.parse(date);
+            LocalDate parsedDate = LocalDate.parse(date);
+
+            if (parsedDate.isAfter(LocalDate.now())) {
+                return false;
+            }
             return true;
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             System.out.println("Invalid Date! Please enter a valid date in the format YYYY-MM-DD.");
             return false;
         }
@@ -394,32 +425,39 @@ public class Senior extends Junior {
      * @return returns false or true based on the format
      */
     public static boolean isValidMail(String email) {
+
         if(email.isEmpty())
             return false;
         if(email.contains(" "))
             return false;
 
         int atIndex = email.indexOf('@');
-
         if(atIndex <= 0)
             return false;
         if(email.indexOf('@', atIndex + 1) != -1)
             return false;
 
+        String localPart = email.substring(0, atIndex);
+        if(!localPart.matches("^[A-Za-z0-9._-]+$"))
+            return false;
+
         String domainPart = email.substring(atIndex + 1);
-
-        if (domainPart.isEmpty())
-            return false;
-        if(domainPart.length()-1==domainPart.lastIndexOf('.'))
+        if(domainPart.isEmpty())
             return false;
 
-        int charsAfterDot = domainPart.length() - domainPart.lastIndexOf('.') - 1;
+        int lastDot = domainPart.lastIndexOf('.');
+        if(lastDot == -1)
+            return false;
+        if(lastDot == domainPart.length() - 1)
+            return false;
 
+        int charsAfterDot = domainPart.length() - lastDot - 1;
         if(charsAfterDot < 2)
             return false;
 
         return true;
     }
+
 
     /**
      *Author: Ege Usug
