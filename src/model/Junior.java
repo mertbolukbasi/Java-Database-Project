@@ -39,7 +39,7 @@ public class Junior extends Tester {
                 input = Input.getIntInput();
             } catch (Exception e) {
                 DrawMenu.clearConsole();
-                System.out.println("Invalid input. Please enter a number between 1 and 7.");
+                System.out.println(DrawMenu.RED_BOLD + "Invalid input. Please enter a number between 1 and 7." + DrawMenu.RESET);
                 continue;
             }
 
@@ -90,8 +90,7 @@ public class Junior extends Tester {
                 String title = "Update Contact, " + this.getName() + " " + this.getSurname() + ", " + this.getRole();
                 String[] contents = {
                         "",
-                        DrawMenu.YELLOW_BOLD + "Contact Id: " + DrawMenu.RESET +
-                                DrawMenu.LIGHT_GRAY + " Enter contact id to update (or 'exit' to go back)" + DrawMenu.RESET,
+                        DrawMenu.YELLOW_BOLD + "Contact Id: " + DrawMenu.RESET + DrawMenu.LIGHT_GRAY + " Enter contact id to update (or 'exit' to go back)" + DrawMenu.RESET,
                         ""
                 };
                 DrawMenu.printBoxed(title, contents);
@@ -172,24 +171,20 @@ public class Junior extends Tester {
                     if (rs != null) rs.close();
                     if (ps != null) ps.close();
 
-                    String line = String.format(
-                            "ID=%d | %s %s (%s) | Phone=%s | Email=%s | BirthDate=%s",
-                            id,
-                            safe(firstName),
-                            safe(lastName),
-                            safe(nickname),
-                            safe(phone),
-                            safe(email),
-                            safe(birthDate)
-                    );
 
-                    System.out.println("Current contact:");
-                    System.out.println(line);
-                    System.out.println();
-                    DrawMenu.printCenter("Please enter the new values for the user with ID = " + id);
-                    System.out.println();
-                    System.out.println("Leave input empty to keep the current value.");
-                    System.out.println();
+                    String[] contents2 = {
+                            "",
+                            DrawMenu.BLUE_BOLD + "Contact ID: " + id + DrawMenu.RESET,
+                            DrawMenu.BLUE_BOLD + "First Name: " + firstName + DrawMenu.RESET,
+                            DrawMenu.BLUE_BOLD + "Last Name: " + lastName + DrawMenu.RESET,
+                            DrawMenu.BLUE_BOLD + "Nickname: " + nickname + DrawMenu.RESET,
+                            DrawMenu.BLUE_BOLD + "Phone: " + phone + DrawMenu.RESET,
+                            DrawMenu.BLUE_BOLD + "Email: " + email + DrawMenu.RESET,
+                            DrawMenu.BLUE_BOLD + "Birth Date: " + birthDate + DrawMenu.RESET,
+                            "",
+                            DrawMenu.PURPLE_BOLD + "Leave input empty to keep the current value." + DrawMenu.RESET
+                    };
+                    DrawMenu.printBoxed(title, contents2);
 
                     while (true) {
                         DrawMenu.printCenter("New FIRST NAME (current: " + safe(firstName) + "): ");
@@ -370,19 +365,20 @@ public class Junior extends Tester {
                     int rows = updatePs.executeUpdate();
 
                     if (rows > 0) {
-                        System.out.println();
-                        System.out.println("Contact updated successfully. New values:");
-                        String newLine = String.format(
-                                "ID=%d | %s %s (%s) | Phone=%s | Email=%s | BirthDate=%s",
-                                id,
-                                safe(firstName),
-                                safe(lastName),
-                                safe(nickname),
-                                safe(phone),
-                                safe(email),
-                                safe(birthDate)
-                        );
-                        System.out.println(newLine);
+                        DrawMenu.clearConsole();
+                        System.out.println(DrawMenu.GREEN_BOLD + "Contact updated successfully." + DrawMenu.RESET);
+                        String[] contents3 = {
+                                "",
+                                DrawMenu.BLUE_BOLD + "Contact ID: " + id + DrawMenu.RESET,
+                                DrawMenu.BLUE_BOLD + "First Name: " + firstName + DrawMenu.RESET,
+                                DrawMenu.BLUE_BOLD + "Last Name: " + lastName + DrawMenu.RESET,
+                                DrawMenu.BLUE_BOLD + "Nickname: " + nickname + DrawMenu.RESET,
+                                DrawMenu.BLUE_BOLD + "Phone: " + phone + DrawMenu.RESET,
+                                DrawMenu.BLUE_BOLD + "Email: " + email + DrawMenu.RESET,
+                                DrawMenu.BLUE_BOLD + "Birth Date: " + birthDate + DrawMenu.RESET,
+                                "",
+                        };
+                        DrawMenu.printBoxed(title, contents3);
                     } else {
                         System.out.println(DrawMenu.RED_BOLD + "No rows were updated. Please check the ID." + DrawMenu.RESET);
                     }

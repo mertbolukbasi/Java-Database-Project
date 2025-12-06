@@ -46,33 +46,43 @@ public class Senior extends Junior {
         }
         switch (input) {
             case 1:
+                DrawMenu.clearConsole();
                 this.changePassword();
                 break;
             case 2:
+                DrawMenu.clearConsole();
                 this.listAllContacts();
                 break;
             case 3:
+                DrawMenu.clearConsole();
                 this.searchContact();
                 break;
             case 4:
+                DrawMenu.clearConsole();
                 this.searchBySelectedFields();
                 break;
             case 5:
+                DrawMenu.clearConsole();
                 this.sortContacts();
                 break;
             case 6:
+                DrawMenu.clearConsole();
                 this.addContact();
                 break;
             case 7:
+                DrawMenu.clearConsole();
                 this.updateContact();
                 break;
             case 8:
+                DrawMenu.clearConsole();
                 this.deleteContact();
                 break;
             case 9:
+                DrawMenu.clearConsole();
                 this.undoOperation();
                 break;
             case 10:
+                DrawMenu.clearConsole();
                 this.logout();
                 break;
             default:
@@ -80,7 +90,7 @@ public class Senior extends Junior {
                 showUserMenu();
                 break;
         }
-
+        this.showUserMenu();
     }
 
     /**
@@ -155,7 +165,10 @@ public class Senior extends Junior {
                     showUserMenu();
                 }
                 while(!firstName.matches("^[a-zA-ZçÇğĞıİöÖşŞüÜ]+$")) {
-                    DrawMenu.printCenter( DrawMenu.RED + "First name can not contain numbers!" + DrawMenu.RESET);
+                    DrawMenu.clearConsole();
+                    System.out.println(DrawMenu.RED + "First name cannot contain numbers or cannot be empty!" + DrawMenu.RESET);
+                    DrawMenu.printBoxed(title, contentTable1);
+                    System.out.println();
                     DrawMenu.printCenter("First Name: ");
                     firstName = Input.getStringInput();
                 }
@@ -192,7 +205,10 @@ public class Senior extends Junior {
                     showUserMenu();
                 }
                 while(!lastName.matches("^[a-zA-ZçÇğĞıİöÖşŞüÜ]+$")) {
-                    DrawMenu.printCenter(DrawMenu.RED+ "Last can not contain numbers!" + DrawMenu.RESET);
+                    DrawMenu.clearConsole();
+                    System.out.println(DrawMenu.RED+ "Last name cannot contain numbers or cannot be empty!" + DrawMenu.RESET);
+                    DrawMenu.printBoxed(title, contentTable2);
+                    System.out.println();
                     DrawMenu.printCenter("Last Name: ");
                     lastName = Input.getStringInput();
                 }
@@ -229,9 +245,8 @@ public class Senior extends Junior {
             contact.setNickname(nickname);
         }
 
-
+        DrawMenu.clearConsole();
         while (true) {
-            DrawMenu.clearConsole();
             String[] contentTable4 = {
                     "",
                     DrawMenu.BLUE_BOLD + "[1] First Name: " + DrawMenu.RESET + firstName,
@@ -278,8 +293,8 @@ public class Senior extends Junior {
             }
         }
 
+        DrawMenu.clearConsole();
         while (true) {
-            DrawMenu.clearConsole();
             String[] contentTable5 = {
                     "",
                     DrawMenu.BLUE_BOLD + "[1] First Name: " + DrawMenu.RESET + firstName,
@@ -326,8 +341,8 @@ public class Senior extends Junior {
             }
         }
 
+        DrawMenu.clearConsole();
         while (true) {
-            DrawMenu.clearConsole();
             String[] contentTable6 = {
                     "",
                     DrawMenu.BLUE_BOLD + "[1] First Name: " + DrawMenu.RESET + firstName,
@@ -341,7 +356,7 @@ public class Senior extends Junior {
             DrawMenu.printBoxed(title, contentTable6);
 
             System.out.println();
-            DrawMenu.printCenter("Birth Date (YYYY-MM-DD: ");
+            DrawMenu.printCenter("Birth Date (YYYY-MM-DD): ");
             String temp = Input.getStringInput();
             if(temp.equals("exit")) {
                 DrawMenu.clearConsole();
@@ -598,7 +613,7 @@ public class Senior extends Junior {
 
                 case ADD_CONTACT:
                     // Ekleneni siler
-                    Contact added = (Contact) last.getNewData();
+                    Contact added = (Contact) last.getOldData();
                     PreparedStatement ps1 = db.prepareStatement("DELETE FROM contacts WHERE contact_id = ?");
                     ps1.setInt(1, added.getContactId());
                     ps1.executeUpdate();
@@ -646,7 +661,5 @@ public class Senior extends Junior {
         catch (SQLException e) {
             System.out.println(DrawMenu.RED_BOLD + "Undo failed due to database error." + DrawMenu.RESET);
         }
-
-        Input.getStringInput();
     }
 }
