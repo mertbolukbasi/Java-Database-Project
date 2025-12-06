@@ -90,7 +90,6 @@ public class Senior extends Junior {
                 showUserMenu();
                 break;
         }
-        this.showUserMenu();
     }
 
     /**
