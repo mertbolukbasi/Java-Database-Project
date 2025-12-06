@@ -7,7 +7,8 @@ public class undoOperation {
         UPDATE_CONTACT,
         DELETE_CONTACT,
         ADD_USER,
-        DELETE_USER
+        DELETE_USER,
+        UPDATE_USER
     }
 
     private ActionType type;

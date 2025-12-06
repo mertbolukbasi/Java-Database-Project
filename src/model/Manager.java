@@ -8,7 +8,9 @@ import utils.PasswordHash;
 import java.sql.*;
 import java.util.ArrayList;
 
+
 public class Manager extends User {
+    private ArrayList<undoOperation> undoStack = new ArrayList<>();
 
     private ArrayList<Integer> getAllUserId() throws SQLException {
         ArrayList<Integer> idList = new ArrayList<>();
@@ -91,6 +93,8 @@ public class Manager extends User {
     }
 
     public void updateUser(String user_id, User user) throws SQLException {
+        User oldUser = getUserById(Integer.parseInt(user_id));
+
         StringBuilder query = new StringBuilder("UPDATE users SET ");
         ArrayList<Object> parameters = new ArrayList<>();
 
@@ -136,6 +140,8 @@ public class Manager extends User {
         for (int i = 0; i < parameters.size(); i++) {
             preparedStatement.setObject(i + 1, parameters.get(i));
         }
+        undoStack.add(new undoOperation(undoOperation.ActionType.UPDATE_USER, oldUser, user));
+
         dbConnection.commit();
         dbConnection.close();
 
@@ -153,6 +159,7 @@ public class Manager extends User {
             preparedStatement.setString(5, user.getRole());
             preparedStatement.executeUpdate();
             dbConnection.close();
+        undoStack.add(new undoOperation(undoOperation.ActionType.ADD_USER, null, user));
         return user;
     }
 
@@ -190,17 +197,76 @@ public class Manager extends User {
 
 
     public void deleteUser(int id) throws SQLException {
+        User oldUser = getUserById(id);
+
         String query = "DELETE FROM users WHERE user_id = ?";
         Connection connection = Database.openDatabase();
         PreparedStatement preparedStatement = connection.prepareStatement(query);
         preparedStatement.setInt(1, id);
         preparedStatement.executeUpdate();
+        undoStack.add(new undoOperation(undoOperation.ActionType.DELETE_USER, oldUser, null));
+
+
+
         connection.close();
     }
 
     public void showContactStats() {
         //TODO
     }
+
+    public void undoOperation() throws SQLException {
+
+        if (undoStack.isEmpty()) {
+            System.out.println("No operation to undo!");
+            return;
+        }
+
+        undoOperation last = undoStack.remove(undoStack.size() - 1);
+
+        switch (last.getType()) {
+
+            case ADD_USER:
+                User added = (User) last.getNewData();
+                deleteUser(added.getUserId());
+                System.out.println("Undo: Added user removed.");
+                break;
+
+            case DELETE_USER:
+                User deleted = (User) last.getOldData();
+                restoreUser(deleted);
+                System.out.println("Undo: Deleted user restored.");
+                break;
+            case UPDATE_USER:
+                User before = (User) last.getOldData();
+                User after = (User) last.getNewData();
+                deleteUser(after.getUserId());
+                restoreUser(before);
+                System.out.println("Undo: User update reverted.");
+                break;
+
+        }
+    }
+
+    private void restoreUser(User u) throws SQLException {
+
+        Connection db = Database.openDatabase();
+
+        String sql = "INSERT INTO users (user_id, username, password_hash, name, surname, role, created_at, updated_at) " + "VALUES (?, ?, ?, ?, ?, ?, NOW(), NOW())";
+
+        PreparedStatement ps = db.prepareStatement(sql);
+
+        ps.setInt(1, u.getUserId());
+        ps.setString(2, u.getUsername());
+        ps.setString(3, u.getPassword_hash());
+        ps.setString(4, u.getName());
+        ps.setString(5, u.getSurname());
+        ps.setString(6, u.getRole());
+
+        ps.executeUpdate();
+        db.close();
+    }
+
 
     @Override
     public void showUserMenu() {
@@ -564,6 +630,10 @@ public class Manager extends User {
                     }
                 }
                 this.showUserMenu();
+                break;
+            case 8:
+                this.undoOperation();
+                showUserMenu();
                 break;
             default:
                 this.logout();
