@@ -56,14 +56,17 @@ public class Senior extends Junior {
             case 3:
                 DrawMenu.clearConsole();
                 this.searchContact();
+                this.showUserMenu();
                 break;
             case 4:
                 DrawMenu.clearConsole();
                 this.searchBySelectedFields();
+                this.showUserMenu();
                 break;
             case 5:
                 DrawMenu.clearConsole();
                 this.sortContacts();
+                this.showUserMenu();
                 break;
             case 6:
                 DrawMenu.clearConsole();
@@ -433,6 +436,7 @@ public class Senior extends Junior {
             undoData.setOldContact(contact);
             Undo.getUndoStack().add(undoData);
 
+            DrawMenu.clearConsole();
             System.out.println(DrawMenu.GREEN_BOLD + "Contact successfully added!" + DrawMenu.RESET);
 
             showUserMenu();

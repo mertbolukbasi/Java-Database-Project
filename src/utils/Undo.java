@@ -36,11 +36,10 @@ public class Undo {
         String query = "INSERT INTO users (name, surname, username, password_hash, role) VALUES (?, ?, ?, ?, ?)";
         Connection dbConnection = Database.openDatabase();
         PreparedStatement preparedStatement = dbConnection.prepareStatement(query);
-        String passwordHash = PasswordHash.hash(user.getPassword_hash());
         preparedStatement.setString(1, user.getName());
         preparedStatement.setString(2, user.getSurname());
         preparedStatement.setString(3, user.getUsername());
-        preparedStatement.setString(4, passwordHash);
+        preparedStatement.setString(4, user.getPassword_hash());
         preparedStatement.setString(5, user.getRole());
         preparedStatement.executeUpdate();
         dbConnection.close();
@@ -149,9 +148,5 @@ public class Undo {
 
     public static Stack<UndoData> getUndoStack() {
         return undoStack;
-    }
-
-    public static void setUndoStack(Stack<UndoData> undoStack) {
-        Undo.undoStack = undoStack;
     }
 }
