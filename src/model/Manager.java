@@ -6,9 +6,16 @@ import utils.Input;
 import utils.PasswordHash;
 
 import java.sql.*;
+import java.time.LocalDate;
+import java.time.Period;
 import java.util.ArrayList;
 
 public class Manager extends User {
+
+    private static class MostUsedName {
+        public String name = "";
+        public int count = 0;
+    }
 
     private ArrayList<Integer> getAllUserId() throws SQLException {
         ArrayList<Integer> idList = new ArrayList<>();
@@ -166,7 +173,6 @@ public class Manager extends User {
         connection.close();
         return false;
     }
-
 
     public void deleteUser(int id) throws SQLException {
         String query = "DELETE FROM users WHERE user_id = ?";
@@ -403,8 +409,204 @@ public class Manager extends User {
         return newUser;
     }
 
+    private int totalContact() throws SQLException {
+        String query = "SELECT COUNT(*) FROM contacts";
+        Connection dbConnection = Database.openDatabase();
+        PreparedStatement preparedStatement = dbConnection.prepareStatement(query);
+        ResultSet resultSet = preparedStatement.executeQuery();
+        if(resultSet.next()) {
+            return resultSet.getInt(1);
+        }
+        return 0;
+    }
+
+    private Contact oldestPerson() throws SQLException {
+        String sql = "SELECT * FROM contacts WHERE birth_date IS NOT NULL ORDER BY birth_date ASC LIMIT 1";
+        Connection dbConnection = Database.openDatabase();
+        Statement statement = dbConnection.createStatement();
+        ResultSet resultSet = statement.executeQuery(sql);
+        Contact contact = new Contact();
+        if(resultSet.next()) {
+            contact.setContactId(resultSet.getInt("contact_id"));
+            contact.setFirstName(resultSet.getString("first_name"));
+            contact.setLastName(resultSet.getString("last_name"));
+            contact.setNickname(resultSet.getString("nickname"));
+            contact.setPhonePrimary(resultSet.getString("phone_primary"));
+            contact.setEmail(resultSet.getString("email"));
+            contact.setBirthDate(resultSet.getDate("birth_date"));
+            contact.setCreatedAt(resultSet.getDate("created_at"));
+            contact.setUpdatedAt(resultSet.getDate("updated_at"));
+            return contact;
+        }
+        return contact;
+    }
+
+    private Contact youngestPerson() throws SQLException {
+        String sql = "SELECT * FROM contacts WHERE birth_date IS NOT NULL ORDER BY birth_date DESC LIMIT 1";
+        Connection dbConnection = Database.openDatabase();
+        Statement statement = dbConnection.createStatement();
+        ResultSet resultSet = statement.executeQuery(sql);
+        Contact contact = new Contact();
+        if(resultSet.next()) {
+            contact.setContactId(resultSet.getInt("contact_id"));
+            contact.setFirstName(resultSet.getString("first_name"));
+            contact.setLastName(resultSet.getString("last_name"));
+            contact.setNickname(resultSet.getString("nickname"));
+            contact.setPhonePrimary(resultSet.getString("phone_primary"));
+            contact.setEmail(resultSet.getString("email"));
+            contact.setBirthDate(resultSet.getDate("birth_date"));
+            contact.setCreatedAt(resultSet.getDate("created_at"));
+            contact.setUpdatedAt(resultSet.getDate("updated_at"));
+            return contact;
+        }
+        return contact;
+    }
+
+    private double averageAge() throws SQLException {
+        String sql = "SELECT AVG(TIMESTAMPDIFF(YEAR, birth_date, CURDATE())) as average_age FROM contacts WHERE birth_date IS NOT NULL";
+        Connection dbConnection = Database.openDatabase();
+        Statement statement = dbConnection.createStatement();
+        ResultSet resultSet = statement.executeQuery(sql);
+        if(resultSet.next()) {
+            return resultSet.getDouble("average_age");
+        }
+        return 0.0;
+    }
+
+    private MostUsedName mostUsedName() throws SQLException {
+        String sql = "SELECT first_name, COUNT(*) as count FROM contacts " +
+                "WHERE first_name IS NOT NULL " +
+                "GROUP BY first_name " +
+                "ORDER BY count DESC LIMIT 1";
+
+        Connection dbConnection = Database.openDatabase();
+        Statement statement = dbConnection.createStatement();
+        ResultSet resultSet = statement.executeQuery(sql);
+        MostUsedName mostUsedName = new MostUsedName();
+        if(resultSet.next()) {
+            String name = resultSet.getString("first_name");
+            int count = resultSet.getInt("count");
+            mostUsedName.name = name;
+            mostUsedName.count = count;
+            return mostUsedName;
+        }
+        return mostUsedName;
+    }
+
+    public int calculateAge(Date birthDate) {
+        if (birthDate == null) {
+            return 0;
+        }
+
+        LocalDate birth = birthDate.toLocalDate();
+
+        LocalDate today = LocalDate.now();
+
+        if (birth != null) {
+            return Period.between(birth, today).getYears();
+        } else {
+            return 0;
+        }
+    }
+
+
+
     public void showContactStats() {
-        //TODO
+        String titleStat = "Contacts Statistical Info, " + this.getName() + " " + this.getSurname() + ", " + this.getRole();
+        DrawMenu.clearConsole();
+        while(true) {
+            try {
+                String input;
+                do {
+                    String[] statContent = {
+                            "",
+                            DrawMenu.BLUE_BOLD + "Total Contact: " + DrawMenu.RESET + this.totalContact() + DrawMenu.LIGHT_GRAY + DrawMenu.RESET,
+                            DrawMenu.BLUE_BOLD + "Average Age: " + DrawMenu.RESET + this.averageAge() + DrawMenu.LIGHT_GRAY + DrawMenu.RESET,
+                            DrawMenu.BLUE_BOLD + "[1] Oldest Person" + DrawMenu.RESET,
+                            DrawMenu.BLUE_BOLD + "[2] Youngest Person" + DrawMenu.RESET,
+                            DrawMenu.BLUE_BOLD + "[3] Most frequently used name" + DrawMenu.RESET,
+                            ""
+                    };
+                    DrawMenu.printBoxed(titleStat, statContent);
+                    System.out.println();
+                    DrawMenu.printCenter("Your choice: ");
+                    input = Input.getStringInput();
+                    if(input.equals("exit")) {
+                        DrawMenu.clearConsole();
+                        break;
+                    }
+                    if(Integer.parseInt(input) != 1 && Integer.parseInt(input) != 2 && Integer.parseInt(input) != 3) {
+                        DrawMenu.clearConsole();
+                        System.out.println(DrawMenu.RED_BOLD + "Invalid input. Please enter a number between 1 and 3." + DrawMenu.RESET);
+                    }
+                } while(Integer.parseInt(input) != 1 && Integer.parseInt(input) != 2 && Integer.parseInt(input) != 3);
+
+                switch(Integer.parseInt(input)) {
+                    case 1:
+                        DrawMenu.clearConsole();
+                        Contact oldest = this.oldestPerson();
+                        String[] oldestContent = {
+                                "",
+                                DrawMenu.BLUE_BOLD + "Oldest Age: " + calculateAge(oldest.getBirthDate()) + DrawMenu.LIGHT_GRAY + DrawMenu.RESET,
+                                "",
+                                DrawMenu.BLUE_BOLD + "ID: " + DrawMenu.LIGHT_GRAY + oldest.getContactId() + DrawMenu.RESET,
+                                DrawMenu.BLUE_BOLD + "Nickname: " + DrawMenu.LIGHT_GRAY + oldest.getNickname() + DrawMenu.RESET,
+                                DrawMenu.BLUE_BOLD + "Phone: " + DrawMenu.LIGHT_GRAY + oldest.getPhonePrimary() + DrawMenu.RESET,
+                                DrawMenu.BLUE_BOLD + "Email: " + DrawMenu.LIGHT_GRAY + oldest.getEmail() + DrawMenu.RESET,
+                                DrawMenu.BLUE_BOLD + "Birth Date: " + DrawMenu.LIGHT_GRAY + oldest.getBirthDate() + DrawMenu.RESET,
+                                DrawMenu.BLUE_BOLD + "Created At: " + DrawMenu.LIGHT_GRAY + oldest.getCreatedAt() + DrawMenu.RESET,
+                                DrawMenu.BLUE_BOLD + "Updated At: " + DrawMenu.LIGHT_GRAY + oldest.getUpdatedAt() + DrawMenu.RESET,
+                                ""
+                        };
+                        DrawMenu.printBoxed(titleStat, oldestContent);
+                        break;
+
+                    case 2:
+                        DrawMenu.clearConsole();
+                        Contact youngest = this.youngestPerson();
+                        String[] youngestContent = {
+                                "",
+                                DrawMenu.BLUE_BOLD + "Oldest Age: " + calculateAge(youngest.getBirthDate()) + DrawMenu.LIGHT_GRAY + DrawMenu.RESET,
+                                "",
+                                DrawMenu.BLUE_BOLD + "ID: " + DrawMenu.LIGHT_GRAY + youngest.getContactId() + DrawMenu.RESET,
+                                DrawMenu.BLUE_BOLD + "Nickname: " + DrawMenu.LIGHT_GRAY + youngest.getNickname() + DrawMenu.RESET,
+                                DrawMenu.BLUE_BOLD + "Phone: " + DrawMenu.LIGHT_GRAY + youngest.getPhonePrimary() + DrawMenu.RESET,
+                                DrawMenu.BLUE_BOLD + "Email: " + DrawMenu.LIGHT_GRAY + youngest.getEmail() + DrawMenu.RESET,
+                                DrawMenu.BLUE_BOLD + "Birth Date: " + DrawMenu.LIGHT_GRAY + youngest.getBirthDate() + DrawMenu.RESET,
+                                DrawMenu.BLUE_BOLD + "Created At: " + DrawMenu.LIGHT_GRAY + youngest.getCreatedAt() + DrawMenu.RESET,
+                                DrawMenu.BLUE_BOLD + "Updated At: " + DrawMenu.LIGHT_GRAY + youngest.getUpdatedAt() + DrawMenu.RESET,
+                                ""
+                        };
+                        DrawMenu.printBoxed(titleStat, youngestContent);
+                        break;
+
+                    case 3:
+                        DrawMenu.clearConsole();
+                        MostUsedName mostUsed = this.mostUsedName();
+                        String[] mostUsedContent = {
+                                "",
+                                DrawMenu.BLUE_BOLD + "Most frequently used name: " + DrawMenu.LIGHT_GRAY + mostUsed.name + DrawMenu.RESET,
+                                DrawMenu.BLUE_BOLD + "Count: " + DrawMenu.LIGHT_GRAY + mostUsed.count + DrawMenu.RESET,
+                                ""
+                        };
+                        DrawMenu.printBoxed(titleStat, mostUsedContent);
+                        break;
+                }
+
+                System.out.println();
+                DrawMenu.printCenter("Press enter to return to menu: ");
+                Input.getStringInput();
+                DrawMenu.clearConsole();
+                break;
+            } catch (SQLException e) {
+                DrawMenu.clearConsole();
+                System.out.println(DrawMenu.RED_BOLD + "Database Error: Contacts could not fetch. Please try again." + DrawMenu.RESET);
+            } catch (NumberFormatException e) {
+                DrawMenu.clearConsole();
+                System.out.println(DrawMenu.RED_BOLD + "Invalid input. Please try again." + DrawMenu.RESET);
+            }
+        }
+        showUserMenu();
     }
 
     @Override
