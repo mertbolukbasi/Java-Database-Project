@@ -752,6 +752,7 @@ public class Manager extends User {
         switch (input) {
             case 1:
                 this.changePassword();
+                DrawMenu.showLoginScreen();
                 break;
             case 2:
                 this.showContactStats();

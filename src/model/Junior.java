@@ -66,6 +66,7 @@ public class Junior extends Tester {
                     break;
                 case 6:
                     this.changePassword();
+                    DrawMenu.showLoginScreen();
                     break;
                 case 7:
                     this.logout();

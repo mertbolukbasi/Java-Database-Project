@@ -47,6 +47,7 @@ public class Senior extends Junior {
             case 1:
                 DrawMenu.clearConsole();
                 this.changePassword();
+                DrawMenu.showLoginScreen();
                 break;
             case 2:
                 DrawMenu.clearConsole();

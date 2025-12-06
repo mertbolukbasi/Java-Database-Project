@@ -59,6 +59,7 @@ public class Tester extends User {
                     break;
                 case 5:
                     this.changePassword();
+                    DrawMenu.showLoginScreen();
                     break;
                 case 6:
                     this.logout();
