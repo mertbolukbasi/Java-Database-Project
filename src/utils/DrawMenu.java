@@ -107,16 +107,18 @@ public class DrawMenu {
 
         String username = BLUE_BOLD + "Username" + ":" + RESET + LIGHT_GRAY + ITALIC + " write your username" + RESET;
         String password = BLUE_BOLD + "Password" + ":" + RESET + LIGHT_GRAY + ITALIC + " write your password" + RESET;
-        String[] contents = {"",username, password, ""};
+        String exit = DrawMenu.RED_BOLD + "Write exit to shutdown" + DrawMenu.RESET;
+        String[] contents = {"",username, password, "", exit, ""};
         printBoxed("Login", contents);
 
         System.out.println();
         printCenter("Username: ");
         try {
             String usernameInput = Input.getStringInput();
+            if(usernameInput.equals("exit")) return;
             clearConsole();
             String username2 = BLUE_BOLD + "Username" + ": " + RESET + LIGHT_GRAY + ITALIC + usernameInput + RESET;
-            String[] contents2 = {"",username2, password, ""};
+            String[] contents2 = {"",username2, password, "", exit, ""};
             printBoxed("Login", contents2);
             System.out.println();
 
@@ -124,9 +126,10 @@ public class DrawMenu {
             System.out.println();
             printCenter("Password: ");
             String passwordInput = Input.getStringInput();
+            if(passwordInput.equals("exit")) return;
             clearConsole();
             String password2 = BLUE_BOLD + "Password" + ": " + RESET + LIGHT_GRAY + ITALIC + passwordInput + RESET;
-            String[] contents3 = {"",username2, password2, ""};
+            String[] contents3 = {"",username2, password2, "", exit, ""};
             printBoxed("Login", contents3);
 
             User user = Database.login(usernameInput, passwordInput);

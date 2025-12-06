@@ -1,15 +1,14 @@
 package model;
 
 import database.Database;
-import utils.DrawMenu;
-import utils.Input;
+import utils.*;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.time.LocalDate;
 
 
 public class Senior extends Junior {
-    private ArrayList<undoOperation> undoStack = new ArrayList<>();
 
     /**
      * User menu creation
@@ -72,18 +71,45 @@ public class Senior extends Junior {
             case 7:
                 DrawMenu.clearConsole();
                 this.updateContact();
+                this.showUserMenu();
                 break;
             case 8:
                 DrawMenu.clearConsole();
                 this.deleteContact();
                 break;
             case 9:
-                DrawMenu.clearConsole();
-                this.undoOperation();
+                if(Undo.getUndoStack().isEmpty()) {
+                    DrawMenu.clearConsole();
+                    System.out.println(DrawMenu.RED_BOLD + "No undo available" + DrawMenu.RESET);
+                } else {
+                    UndoData undoData = Undo.getUndoStack().peek();
+                    Undo.getUndoStack().clear();
+                    try {
+                        switch(undoData.getUndoAction()) {
+                            case ADD_CONTACT:
+                                Undo.addContactUndo(undoData.getOldContact().getNickname());
+                                break;
+                            case DELETE_CONTACT:
+                                Undo.deleteContactUndo(undoData.getOldContact());
+                                break;
+                            case UPDATE_CONTACT:
+                                Undo.updateContactUndo(undoData.getOldContact().getContactId(), undoData.getOldContact());
+                                break;
+                        }
+                        DrawMenu.clearConsole();
+                        System.out.println(DrawMenu.GREEN_BOLD + "Undo successful!" + DrawMenu.RESET);
+                    } catch (Exception e) {
+                        DrawMenu.clearConsole();
+                        System.out.println(DrawMenu.RED_BOLD + "Database Error: Undo did not work." + DrawMenu.RESET);
+                        System.out.println(e.getMessage());
+                    }
+                }
+                this.showUserMenu();
                 break;
             case 10:
                 DrawMenu.clearConsole();
                 this.logout();
+                DrawMenu.showLoginScreen();
                 break;
             default:
                 System.out.println("Invalid input. Please enter a number between 1 and 10.");
@@ -225,7 +251,7 @@ public class Senior extends Junior {
                 "",
                 DrawMenu.BLUE_BOLD + "[1] First Name: " + DrawMenu.RESET + firstName,
                 DrawMenu.BLUE_BOLD + "[2] Last Name: " + DrawMenu.RESET + lastName,
-                DrawMenu.BLUE_BOLD + "[3] Nickname: " + DrawMenu.RESET + DrawMenu.ITALIC + DrawMenu.LIGHT_GRAY + (nickname.isEmpty() ? "Optional" : nickname) + DrawMenu.RESET,
+                DrawMenu.BLUE_BOLD + "[3] Nickname: " + DrawMenu.RESET + DrawMenu.ITALIC + DrawMenu.LIGHT_GRAY + "Enter nickname" + DrawMenu.RESET,
                 DrawMenu.BLUE_BOLD + "[4] Phone: " + DrawMenu.RESET + DrawMenu.ITALIC + DrawMenu.LIGHT_GRAY + "Enter phone number" + DrawMenu.RESET,
                 DrawMenu.BLUE_BOLD + "[5] Email: " + DrawMenu.RESET + DrawMenu.ITALIC + DrawMenu.LIGHT_GRAY + "Enter email" + DrawMenu.RESET,
                 DrawMenu.BLUE_BOLD + "[6] Birth Date: " + DrawMenu.RESET + DrawMenu.ITALIC + DrawMenu.LIGHT_GRAY + "YYYY-MM-DD" + DrawMenu.RESET,
@@ -234,8 +260,18 @@ public class Senior extends Junior {
         DrawMenu.printBoxed(title, contentTable3);
 
         System.out.println();
-        DrawMenu.printCenter("Nickname (optional): ");
-        nickname = Input.getStringInput();
+        DrawMenu.printCenter("Nickname: ");
+        do {
+            nickname = Input.getStringInput();
+            if(nickname.isEmpty()) {
+                DrawMenu.clearConsole();
+                System.out.println(DrawMenu.RED_BOLD + "Nickname cannot be empty!" + DrawMenu.RESET);
+                DrawMenu.printBoxed(title, contentTable3);
+                System.out.println();
+                DrawMenu.printCenter("Nickname: ");
+            }
+        } while(nickname.isEmpty());
+
         if(nickname.equals("exit")) {
             DrawMenu.clearConsole();
             showUserMenu();
@@ -387,11 +423,16 @@ public class Senior extends Junior {
             ps.setString(5, contact.getEmail());
             ps.setObject(6, contact.getBirthDate());
 
+
             ps.executeUpdate();
             dbConnection.close();
-            System.out.println(DrawMenu.GREEN_BOLD + "Contact successfully added!" + DrawMenu.RESET);
 
-            undoStack.add(new undoOperation(undoOperation.ActionType.ADD_CONTACT, null, contact));
+            UndoData undoData = new UndoData();
+            undoData.setUndoAction(Action.ADD_CONTACT);
+            undoData.setOldContact(contact);
+            Undo.getUndoStack().add(undoData);
+
+            System.out.println(DrawMenu.GREEN_BOLD + "Contact successfully added!" + DrawMenu.RESET);
 
             showUserMenu();
         }
@@ -571,9 +612,12 @@ public class Senior extends Junior {
                 ps.setInt(1, id);
                 ps.executeUpdate();
 
-                undoStack.add(new undoOperation(undoOperation.ActionType.DELETE_CONTACT, contact, null));
-
                 db.close();
+
+                UndoData undoData = new UndoData();
+                undoData.setUndoAction(Action.DELETE_CONTACT);
+                undoData.setOldContact(contact);
+                Undo.getUndoStack().add(undoData);
 
                 DrawMenu.clearConsole();
                 System.out.println(DrawMenu.GREEN_BOLD + "Contact deleted successfully!" + DrawMenu.RESET);
@@ -592,73 +636,5 @@ public class Senior extends Junior {
         }
     }
 
-    /**
-     * Makes undo operation.
-     * @author Ege Usuğ
-     */
-    public void undoOperation() {
-        DrawMenu.clearConsole();
 
-        if (undoStack.isEmpty()) {
-            System.out.println(DrawMenu.RED_BOLD + "No operations to undo!" + DrawMenu.RESET);Input.getStringInput();
-            return;
-        }
-
-        undoOperation last = undoStack.remove(undoStack.size() - 1);
-
-        try (Connection db = Database.openDatabase()) {
-
-            switch (last.getType()) {
-
-                case ADD_CONTACT:
-                    // Ekleneni siler
-                    Contact added = (Contact) last.getOldData();
-                    PreparedStatement ps1 = db.prepareStatement("DELETE FROM contacts WHERE contact_id = ?");
-                    ps1.setInt(1, added.getContactId());
-                    ps1.executeUpdate();
-                    System.out.println(DrawMenu.GREEN_BOLD + "Undo successful: Contact addition reverted." + DrawMenu.RESET);
-                    break;
-
-
-                case DELETE_CONTACT:
-                    // Silinen geri eklenir
-                    Contact deleted = (Contact) last.getOldData();
-                    PreparedStatement ps2 = db.prepareStatement("INSERT INTO contacts (contact_id, first_name, last_name, nickname, phone_primary, email, birth_date, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
-
-                    ps2.setInt(1, deleted.getContactId());
-                    ps2.setString(2, deleted.getFirstName());
-                    ps2.setString(3, deleted.getLastName());
-                    ps2.setString(4, deleted.getNickname());
-                    ps2.setString(5, deleted.getPhonePrimary());
-                    ps2.setString(6, deleted.getEmail());
-                    ps2.setObject(7, deleted.getBirthDate());
-                    ps2.setObject(8, deleted.getCreatedAt());
-                    ps2.setObject(9, deleted.getUpdatedAt());
-                    ps2.executeUpdate();
-                    System.out.println(DrawMenu.GREEN_BOLD + "Undo successful: Contact restored." + DrawMenu.RESET);
-                    break;
-
-
-                case UPDATE_CONTACT:
-                    // Yeni veriyi eski veriyle değiştirme
-                    Contact oldC = (Contact) last.getOldData();
-                    PreparedStatement ps3 = db.prepareStatement("UPDATE contacts SET first_name=?, last_name=?, nickname=?, phone_primary=?, email=?, birth_date=? WHERE contact_id=?");
-
-                    ps3.setString(1, oldC.getFirstName());
-                    ps3.setString(2, oldC.getLastName());
-                    ps3.setString(3, oldC.getNickname());
-                    ps3.setString(4, oldC.getPhonePrimary());
-                    ps3.setString(5, oldC.getEmail());
-                    ps3.setObject(6, oldC.getBirthDate());
-                    ps3.setInt(7, oldC.getContactId());
-                    ps3.executeUpdate();
-                    System.out.println(DrawMenu.GREEN_BOLD + "Undo successful: Contact update reverted." + DrawMenu.RESET);
-                    break;
-            }
-
-        }
-        catch (SQLException e) {
-            System.out.println(DrawMenu.RED_BOLD + "Undo failed due to database error." + DrawMenu.RESET);
-        }
-    }
 }

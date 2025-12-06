@@ -6,9 +6,9 @@ public class Main {
     public static void main(String[] args) {
         DrawMenu.clearConsole();
         try {
-            //IntroAnimation.drawAnimation();
+            IntroAnimation.drawAnimation();
             DrawMenu.showLoginScreen();
-            //OutroAnimation.drawAnimation();
+            OutroAnimation.drawAnimation();
         } catch (Exception e) {
             System.out.println("Runtime Error.");
         }

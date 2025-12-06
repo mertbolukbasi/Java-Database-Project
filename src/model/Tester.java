@@ -62,6 +62,7 @@ public class Tester extends User {
                     break;
                 case 6:
                     this.logout();
+                    DrawMenu.showLoginScreen();
                     return;
                 default:
                     DrawMenu.clearConsole();

@@ -69,6 +69,7 @@ public class Junior extends Tester {
                     break;
                 case 7:
                     this.logout();
+                    DrawMenu.showLoginScreen();
                     return;
                 default:
                     DrawMenu.clearConsole();
